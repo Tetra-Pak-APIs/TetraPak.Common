@@ -1,0 +1,32 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+
+namespace tetrapak
+{
+    public static class ArrayHelper
+    {
+        public static T[] Join<T>(this T[] self, T[] other)
+        {
+            self ??= new T[0];
+            if (other is null || other.Length == 0)
+                return self;
+
+            var result = new T[self.Length + other.Length];
+            self.CopyTo(result, 0);
+            other.CopyTo(result, self.Length);
+            return result;
+        }
+
+        public static object[] EnumerableToArray(this IEnumerable enumerable)
+        {
+            var list = new List<object>();
+            var enumerator = enumerable.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                list.Add(enumerator.Current);
+            }
+        
+            return list.ToArray();
+        }
+    }
+}
