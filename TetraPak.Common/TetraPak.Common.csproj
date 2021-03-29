@@ -4,6 +4,17 @@
         <RootNamespace>tetrapak</RootNamespace>
         <TargetFrameworks>net5.0;netcoreapp2.1</TargetFrameworks>
         <LangVersion>8</LangVersion>
+        <PackageVersion>0.1.0-beta</PackageVersion>
+        <Title>Tetra Pak common library</Title>
+        <Description>A common set of APIs and tools for Tetra Pak .NET development</Description>
+        <PackageProjectUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</PackageProjectUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Authors>Tetra Pak</Authors>
+        <Copyright>Tetra Pak</Copyright>
+        <PackageLicenseUrl>https://mit-license.org/</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</RepositoryUrl>
+        <RepositoryType>Git</RepositoryType>
+        <PackageReleaseNotes>Initial release (beta)</PackageReleaseNotes>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
