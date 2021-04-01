@@ -2,7 +2,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
-namespace tetrapak
+namespace TetraPak
 {
     public class Device
     {

@@ -1,4 +1,4 @@
-namespace tetrapak
+namespace TetraPak
 {
     public interface IUniquelyIdentifiable
     {

@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
 
-namespace tetrapak
+namespace TetraPak
 {
     public static class TaskHelper
     {
         /// <summary>
-        ///   Examines the status of a <see cref="TaskCompletionSource"/> and awaits its
+        ///   Examines the status of a <see cref="TaskCompletionSource{TResult}"/> and awaits its
         ///   completion when applicable (the TCS might have already ran to completion) and then returns it.
         /// </summary>
         /// <param name="tcs">

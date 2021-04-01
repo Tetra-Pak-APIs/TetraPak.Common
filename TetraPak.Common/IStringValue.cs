@@ -1,8 +1,8 @@
 using System;
 using System.Text.Json.Serialization;
-using tetrapak.serialization;
+using TetraPak.Serialization;
 
-namespace tetrapak
+namespace TetraPak
 {
     /// <summary>
     ///   A string compatible value.

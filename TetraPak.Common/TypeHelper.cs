@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using tetrapak.serialization;
+using TetraPak.Serialization;
 
-namespace tetrapak
+namespace TetraPak
 {
     public static class TypeHelper
     {

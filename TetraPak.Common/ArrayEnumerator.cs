@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-namespace tetrapak
+namespace TetraPak
 {
     public class ArrayEnumerator<T> : IEnumerator<T>
     {

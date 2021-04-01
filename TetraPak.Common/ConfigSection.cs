@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Microsoft.Extensions.Configuration;
 
-namespace tetrapak
+namespace TetraPak
 {
     public abstract class ConfigSection
     {

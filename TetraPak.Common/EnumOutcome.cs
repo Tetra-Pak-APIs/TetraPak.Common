@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace tetrapak
+namespace TetraPak
 {
 #if DEBUG
     [DebuggerDisplay("{" + nameof(DebugDisplay) + "}")]

@@ -2,9 +2,9 @@
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json.Serialization;
-using tetrapak.serialization;
+using TetraPak.Serialization;
 
-namespace tetrapak
+namespace TetraPak
 {
     [JsonConverter(typeof(JsonStringValueSerializer<RandomString>))]
     [DebuggerDisplay("{" + nameof(StringValue) + "}")]

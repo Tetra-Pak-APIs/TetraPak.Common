@@ -3,10 +3,10 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
-using tetrapak.dynamicEntities;
-using tetrapak.serialization;
+using TetraPak.DynamicEntities;
+using TetraPak.Serialization;
 
-namespace tetrapak
+namespace TetraPak
 {
     [Newtonsoft.Json.JsonConverter(typeof(DynamicEntityJsonConverter<Credentials>))]
     public class Credentials : DynamicIdentifiableEntity<string>, IDisposable

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text.Json.Serialization;
-using tetrapak.serialization;
+using TetraPak.Serialization;
 
-namespace tetrapak
+namespace TetraPak
 {
     /// <summary>
     ///   Represents one or more supported user roles.

@@ -1,6 +1,6 @@
 using System;
 
-namespace tetrapak
+namespace TetraPak
 {
     public class Outcome<T> : Outcome
     {

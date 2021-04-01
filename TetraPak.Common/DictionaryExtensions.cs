@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using tetrapak.serialization;
+using TetraPak.Serialization;
 
-namespace tetrapak
+namespace TetraPak
 {
     public static class DictionaryExtensions
     {
@@ -27,7 +27,7 @@ namespace tetrapak
         /// <returns>
         ///   A remapped dictionary.
         /// </returns>
-        /// <seealso cref="MapSafe{TValue}(System.Collections.Generic.IDictionary{string,TValue},tetrapak.serialization.KeyMapInfo,bool)"/>
+        /// <seealso cref="MapSafe{TValue}(System.Collections.Generic.IDictionary{string,TValue},KeyMapInfo,bool)"/>
         public static IDictionary<string, TValue> Map<TValue>(
             this IDictionary<string, TValue> self, 
             IDictionary<string,string> keyMap,
