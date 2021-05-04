@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TetraPak.Logging;
@@ -16,6 +17,18 @@ namespace TetraPak.DynamicEntities
     public partial class DynamicEntity : IDictionary<string,object> 
     {
         IDictionary<string, object> _dictionary = new Dictionary<string, object>();
+        JsonKeyFormat? _jsonKeyFormat;
+
+        public static JsonKeyFormat DefaultJsonKeyFormat { get; set; }
+
+        /// <summary>
+        ///   Gets or sets the JSON key format used for all values. 
+        /// </summary>
+        public JsonKeyFormat? JsonKeyFormat
+        {
+            get => _jsonKeyFormat ?? DefaultJsonKeyFormat;
+            set => _jsonKeyFormat = value;
+        }
 
 #if DEBUG
         static int s_counter;
@@ -29,7 +42,10 @@ namespace TetraPak.DynamicEntities
         protected void SetDictionary(IDictionary<string, object> dictionary) => _dictionary = dictionary;
         
         [DebuggerStepThrough]
-        public virtual TValue Get<TValue>(string key, TValue useDefault = default)
+        public virtual TValue Get_<TValue>(TValue useDefault = default, [CallerMemberName] string caller = null) 
+            => GetValue(JsonKey(caller), useDefault);
+
+        public virtual TValue GetValue<TValue>(string key, TValue useDefault = default)
         {
             if (!_dictionary.TryGetValue(key, out var obj)) 
                 return useDefault;
@@ -95,7 +111,10 @@ namespace TetraPak.DynamicEntities
             return propertyInfo ?? namedCandidate;
         }
 
-        public virtual void Set<TValue>(string key, TValue value) => _dictionary[key] = convertDeserializedArray(key, value);
+        public virtual void Set<TValue>(TValue value, [CallerMemberName] string caller = null)
+            => SetValue(JsonKey(caller), value);
+
+        public virtual void SetValue<TValue>(string key, TValue value) => _dictionary[key] = convertDeserializedArray(key, value);
 
         protected void SetRaw(string key, object value) => _dictionary[key] = convertDeserializedArray(key, value);
 
@@ -152,7 +171,7 @@ namespace TetraPak.DynamicEntities
             var isDynamicEntity = source is DynamicEntity;
             foreach (var (key, value) in source)
             {
-                Set(key, value);
+                SetValue(key, value);
                 if (isDynamicEntity)
                     assigned.Add(key);
             }
@@ -265,10 +284,29 @@ namespace TetraPak.DynamicEntities
             _dictionary = target;
             return this;
         }
+
+        protected string JsonKey([CallerMemberName] string caller = null)
+        {
+            return caller.ToJsonKeyFormat(JsonKeyFormat.Value);
+        }
         
         public virtual object Clone(Type returnType)
         {
             return FromJson(ToJson(), returnType);
         }
+    }
+
+    /// <summary>
+    ///   Used to specify a format for JSON serialization.
+    /// </summary>
+    public enum JsonKeyFormat
+    {
+        CamelCase,
+        
+        PascalCase,
+        
+        SnakeCase,
+        
+        KebabCase
     }
 }

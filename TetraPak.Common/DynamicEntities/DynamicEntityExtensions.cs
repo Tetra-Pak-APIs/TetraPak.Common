@@ -40,13 +40,13 @@ namespace TetraPak.DynamicEntities
                 if (value.IsCollectionOf<DynamicEntity>(out var items) && recursive)
                 {
                     value = cloneDynamicBaseEntityCollection(pair.Key, items);
-                    self.Set(pair.Key, value);
+                    self.SetValue(pair.Key, value);
                     goto next;
                 }
                     
                 if (!(value is DynamicEntity entity))
                 {
-                    self.Set(pair.Key, value);
+                    self.SetValue(pair.Key, value);
                     goto next;
                 }
 
@@ -54,7 +54,7 @@ namespace TetraPak.DynamicEntities
                     goto next;
 
                 value = cloneDynamicEntity(entity, true, path, ignore);
-                self.Set(pair.Key, value);
+                self.SetValue(pair.Key, value);
                 
                 next:
                 path.Pop();

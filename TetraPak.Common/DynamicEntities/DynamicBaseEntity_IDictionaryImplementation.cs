@@ -29,7 +29,7 @@ namespace TetraPak.DynamicEntities
 
         public bool IsReadOnly => _dictionary.IsReadOnly;
 
-        public virtual void Add(string key, object value) => Set(key, value);
+        public virtual void Add(string key, object value) => SetValue(key, value);
 
         public bool ContainsKey(string key) => _dictionary.ContainsKey(key);
 
@@ -44,13 +44,15 @@ namespace TetraPak.DynamicEntities
                 var o = OnTryGetPropertyValue<object>(key);
                 return o
                     ? o.Value
-                    : Get<object>(key);
+                    : GetValue<object>(key);
             }
             set
             {
                 var o = OnTrySetPropertyValue(key, value);
                 if (!o)
-                    Set(key, value);
+                {
+                    SetValue(key, value);
+                }
             }
         }
 

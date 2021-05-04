@@ -2,10 +2,11 @@ using System;
 using System.Buffers;
 using System.Diagnostics;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace TetraPak.Serialization
 {
-    static class JsonExtensions
+    public static class JsonExtensions
     {
         public static object ToObject(this JsonElement element, Type type, JsonSerializerOptions options = null)
         {
@@ -16,6 +17,17 @@ namespace TetraPak.Serialization
             }
 
             return JsonSerializer.Deserialize(bufferWriter.WrittenSpan, type, options);
+        }
+
+        public static string ToJson(this object self, bool indented = false, JsonIgnoreCondition ignoreCondition = JsonIgnoreCondition.Never)
+        {
+            
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = indented, 
+                DefaultIgnoreCondition = ignoreCondition
+            };
+            return JsonSerializer.Serialize(self, options);  
         }
     }
     

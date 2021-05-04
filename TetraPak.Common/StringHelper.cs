@@ -109,44 +109,44 @@ namespace TetraPak
             return sb.ToString();
         }
 
-        public static string ToCamelCase(this string self, bool replaceUnderscore = false)
-        {
-            if (string.IsNullOrWhiteSpace(self))
-                return self;
-
-            if (!char.IsUpper(self[0]) && !replaceUnderscore)
-                return self;
-
-            var ca = self.ToCharArray();
-            var sb = new StringBuilder();
-            var forceUpper = false;
-            for (var i = 0; i < ca.Length; i++)
-            {
-                var c = ca[i];
-                if (char.IsUpper(c) && i == 0)
-                {
-                    sb.Append(char.ToLower(c));
-                    continue;
-                }
-
-                if (c == '_')
-                {
-                    forceUpper = true;
-                    continue;
-                }
-
-                if (forceUpper)
-                {
-                    sb.Append(char.ToUpper(c));
-                    forceUpper = false;
-                    continue;
-                }
-
-                sb.Append(c);
-            }
-
-            return sb.ToString();
-        }
+        // public static string ToCamelCase(this string self, bool replaceUnderscore = false) obsolete
+        // {
+        //     if (string.IsNullOrWhiteSpace(self))
+        //         return self;
+        //
+        //     if (!char.IsUpper(self[0]) && !replaceUnderscore)
+        //         return self;
+        //
+        //     var ca = self.ToCharArray();
+        //     var sb = new StringBuilder();
+        //     var forceUpper = false;
+        //     for (var i = 0; i < ca.Length; i++)
+        //     {
+        //         var c = ca[i];
+        //         if (char.IsUpper(c) && i == 0)
+        //         {
+        //             sb.Append(char.ToLower(c));
+        //             continue;
+        //         }
+        //
+        //         if (c == '_')
+        //         {
+        //             forceUpper = true;
+        //             continue;
+        //         }
+        //
+        //         if (forceUpper)
+        //         {
+        //             sb.Append(char.ToUpper(c));
+        //             forceUpper = false;
+        //             continue;
+        //         }
+        //
+        //         sb.Append(c);
+        //     }
+        //
+        //     return sb.ToString();
+        // }
 
         public static string SplitCamelCase(this string self)
         {

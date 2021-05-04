@@ -99,6 +99,16 @@ namespace TetraPak
             var keys = (IEnumerable<KeyValuePair<T, T>>) self;
             return new Dictionary<T, T>(keys.ToInverted());
         }
+
+        /// <summary>
+        ///   Maps all key/value elements to a collection of items of a specified type.
+        /// </summary>
+        public static IEnumerable<T> MapTo<T, TKey, TValue>(
+            this IDictionary<TKey, TValue> self,
+            Func<KeyValuePair<TKey, TValue>, T> mapper)
+        {
+            return self.Select(mapper);
+        }
         
         public static IEnumerable<KeyValuePair<T,T>> ToInverted<T>(this IEnumerable<KeyValuePair<T,T>> self)
         {

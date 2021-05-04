@@ -2,11 +2,11 @@
 
     <PropertyGroup>
         <RootNamespace>Tetrapak</RootNamespace>
-        <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
+        <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
         <LangVersion>8</LangVersion>
-        <PackageVersion>0.3.0-beta</PackageVersion>
+        <PackageVersion>0.6.0-beta</PackageVersion>
         <Title>Tetra Pak common library</Title>
-        <Description>A common set of APIs and tools for Tetra Pak .NET development</Description>
+        <Description>A common set of code APIs and tools for Tetra Pak .NET development</Description>
         <PackageProjectUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</PackageProjectUrl>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Tetra Pak</Authors>
@@ -15,7 +15,7 @@
         <RepositoryUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
         <PackageReleaseNotes>Initial release (beta)
-- Changed .NET support from .NET5 + .NET Core 2.1 =&gt; .NET5 + .NET Standard 2.1</PackageReleaseNotes>
+- DynamicEntity class now support a mechanism for automatically setting internal value kets accoding to a configured format (camelCase, PascalCase, snake_case or kebab-case) </PackageReleaseNotes>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

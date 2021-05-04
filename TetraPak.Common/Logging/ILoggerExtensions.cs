@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using Microsoft.Extensions.Logging;
 
 namespace TetraPak.Logging
@@ -25,10 +27,21 @@ namespace TetraPak.Logging
             logger?.LogInformation($"{Prefix}{message}");
         }
         
-        public static void Error(this ILogger logger, Exception exception, string message)
+        public static void Error(this ILogger logger, Exception exception, string message = null)
         {
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-            logger?.LogError(exception, $"{Prefix}{message}");
+            logger?.LogError(exception, $"{Prefix}{message ?? exception.Message}");
+        }
+        
+        public static void LogDictionary<TKey,TValue>(this ILogger logger, IDictionary<TKey,TValue> dictionary, LogLevel level)
+        {
+            // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
+            var message = new StringBuilder();
+            foreach (var (key, value) in dictionary)
+            {
+                message.AppendLine($"{key.ToString()}={value?.ToString()}");
+            }
+            logger.Log(level, $"{Prefix}{message}");
         }
     }
 }

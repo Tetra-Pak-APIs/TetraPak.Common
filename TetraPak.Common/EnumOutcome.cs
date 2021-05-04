@@ -23,8 +23,8 @@ namespace TetraPak
         public string DebugDisplay => $"Count={Count}; Total={TotalCount}";
 #endif
 
-        public static EnumOutcome<T> Success(IReadOnlyCollection<T> value, int totalCount) 
-            => new EnumOutcome<T>(true, value, totalCount);
+        public static EnumOutcome<T> Success(IReadOnlyCollection<T> value, int totalCount = 0) 
+            => new EnumOutcome<T>(true, value, totalCount == 0 ? value.Count : totalCount);
         
         public new static EnumOutcome<T> Fail() 
             => new EnumOutcome<T>(false, default, 0, null);

@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TetraPak.DynamicEntities;
 using DynamicEntity = TetraPak.DynamicEntities.DynamicEntity;
 
 namespace TetraPak.Serialization
@@ -55,13 +54,13 @@ namespace TetraPak.Serialization
                     if (key is {} && keyMap?.Map is {} && keyMap.Map.TryGetValue(key, out var mappedKey))
                     {
                         key = mappedKey;
-                        entity.Set(mappedKey, value);
+                        entity.SetValue(mappedKey, value);
                         continue;
                     }
 
                     if (!keyMap?.IsStrict ?? true)
                     {
-                        entity.Set(key, value);
+                        entity.SetValue(key, value);
                     }
                 }
                 catch (Exception ex)
@@ -194,16 +193,9 @@ namespace TetraPak.Serialization
                     writer.WriteNull(key);
                     continue;
                 }
+                var property = value.GetPropertyWithJsonPropertyName(key);
                 writer.WritePropertyName(key);
-                try
-                {
-                    JsonSerializer.Serialize(writer, val);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e); // nisse
-                    throw;
-                }
+                JsonSerializer.Serialize(writer, val);
             }
             writer.WriteEndObject();
         }

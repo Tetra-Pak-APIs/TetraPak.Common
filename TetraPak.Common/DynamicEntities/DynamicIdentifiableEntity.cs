@@ -16,10 +16,10 @@ namespace TetraPak.DynamicEntities
         public virtual TId Id
         {
             [DebuggerStepThrough]
-            get => Get<TId>(KeyId);
+            get => GetValue<TId>(KeyId);
             set
             {
-                Set(KeyId, value);
+                SetValue(KeyId, value);
                 _hashCode = value.GetHashCode();
             }
         }
@@ -48,20 +48,4 @@ namespace TetraPak.DynamicEntities
             Id = id;
         }
     }
-    
-    
-    public class DynamicEntityConverter : JsonConverterFactory
-    {
-        public override bool CanConvert(Type typeToConvert)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    
 }

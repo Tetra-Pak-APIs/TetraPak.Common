@@ -11,25 +11,17 @@ namespace TetraPak
             var properties = GetType().GetProperties();
             foreach (var property in properties.Where(i => i.CanWrite))
             {
-                try
+                var value = configuration[property.Name];
+                if (value is null) 
+                    continue;
+                
+                if (property.PropertyType != typeof(string))
                 {
-                    var value = configuration[property.Name];
-                    if (value is { })
-                    {
-                        if (property.PropertyType != typeof(string))
-                        {
-                            var obj = Convert.ChangeType(value, property.PropertyType);
-                            property.SetValue(this, obj);
-                            continue;
-                        }
-                        property.SetValue(this, value);
-                    }
+                    var obj = Convert.ChangeType(value, property.PropertyType);
+                    property.SetValue(this, obj);
+                    continue;
                 }
-                catch (Exception e) // nisse
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+                property.SetValue(this, value);
             }
         }
 
