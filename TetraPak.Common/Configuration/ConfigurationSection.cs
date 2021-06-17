@@ -1,8 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Tetrapak.Configuration
+namespace TetraPak.Configuration
 {
     /// <summary>
     ///   Provides access to the configuration framework through a POCO class. 
@@ -12,6 +16,9 @@ namespace Tetrapak.Configuration
         /// <summary>
         ///   Gets a value that indicates whether the configuration section contains no information. 
         /// </summary>
+        [JsonIgnore] 
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public bool IsEmpty { get; }
 
         /// <summary>
@@ -27,7 +34,7 @@ namespace Tetrapak.Configuration
         /// <summary>
         ///   Gets the encapsulated <see cref="IConfigurationSection"/>.  
         /// </summary>
-        protected IConfigurationSection Section { get; }
+        public IConfigurationSection Section { get; }
 
         /// <summary>
         ///   Gets a logger.
@@ -35,6 +42,57 @@ namespace Tetrapak.Configuration
         public ILogger Logger { get; } 
 
         string getSectionIdentifier() => SectionIdentifier;
+
+        protected virtual FieldInfo OnGetField(string fieldName)
+        {
+            return GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+        }
+        
+        /// <summary>
+        ///   Reads a value from field-behind (name convention based on property). If the field is null
+        ///   the value is read from the configuration section and. If the configuration section also
+        ///   doesn't supported the value the method returns the <paramref name="useDefault"/> value. 
+        /// </summary>
+        protected T GetFromFieldThenSection<T>(T useDefault = default, ValueParser<T> parser = null, [CallerMemberName] string propertyName = null)
+        {
+            if (tryGetFieldValue(out var fieldValue))
+                return fieldValue;
+
+            if (parser is null)
+            {
+                // automatically support boolean values 
+                if (typeof(T) == typeof(bool))
+                    return Section[propertyName].TryParseConfiguredBool(out var boolValue)
+                        ? (T) Convert.ChangeType(boolValue, typeof(T))
+                        : useDefault;
+
+                if (typeof(T) == typeof(TimeSpan))
+                    return Section[propertyName].TryParseConfiguredTimeSpan(out var timeSpanValue)
+                        ? (T) Convert.ChangeType(timeSpanValue, typeof(T))
+                        : useDefault;
+                    
+                return Section.GetValue(propertyName, useDefault);
+            }
+            
+            var stringValue = Section[propertyName];
+            if (stringValue is { })
+                return parser(stringValue, out var sectionValue) ? sectionValue : useDefault;
+
+            return Section.GetValue(propertyName, useDefault);
+
+            bool tryGetFieldValue(out T value)
+            {
+                value = default;
+                var fieldName = $"_{propertyName.ToLowerInitial()}";
+                var field = OnGetField(fieldName);
+                var o = field?.GetValue(this);
+                if (o is not T tValue)
+                    return false;
+
+                value = tValue;
+                return true;
+            }
+        }
 
         /// <summary>
         ///   Instantiates a <see cref="ConfigurationSection"/>.
@@ -54,9 +112,11 @@ namespace Tetrapak.Configuration
             ILogger logger,
             string sectionIdentifier = null)
         {
-            Section = configuration.GetSection(sectionIdentifier ?? getSectionIdentifier());
-            IsEmpty = !Section.GetChildren().Any(); 
+            Section = configuration?.GetSection(sectionIdentifier ?? getSectionIdentifier());
+            IsEmpty = !Section?.GetChildren().Any() ?? true; 
             Logger = logger;
         }
     }
+    
+    public delegate bool ValueParser<T>(string stringValue, out T value);
 }

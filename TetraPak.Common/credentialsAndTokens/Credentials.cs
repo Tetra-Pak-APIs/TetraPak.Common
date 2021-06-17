@@ -32,7 +32,9 @@ namespace TetraPak
 
         public virtual bool IsAssigned => !string.IsNullOrWhiteSpace(Identity) && !string.IsNullOrWhiteSpace(Secret);
 
+#if NET5_0_OR_GREATER            
         [JsonConstructor]
+#endif
         public Credentials()
         {
         }

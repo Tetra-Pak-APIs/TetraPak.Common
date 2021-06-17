@@ -1,5 +1,8 @@
 using System;
 
+// NOTE: ignores warning about 'Logged' never being used 
+#pragma warning disable 0067
+
 namespace TetraPak.Logging
 {
     /// <summary>

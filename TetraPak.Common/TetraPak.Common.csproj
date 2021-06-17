@@ -1,10 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <RootNamespace>Tetrapak</RootNamespace>
+        <RootNamespace>TetraPak</RootNamespace>
         <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
-        <LangVersion>8</LangVersion>
-        <PackageVersion>0.6.0-beta</PackageVersion>
+        <LangVersion>9</LangVersion>
+        <PackageVersion>0.12.1-beta</PackageVersion>
         <Title>Tetra Pak common library</Title>
         <Description>A common set of code APIs and tools for Tetra Pak .NET development</Description>
         <PackageProjectUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</PackageProjectUrl>
@@ -15,19 +15,42 @@
         <RepositoryUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
         <PackageReleaseNotes>Initial release (beta)
-- DynamicEntity class now support a mechanism for automatically setting internal value kets accoding to a configured format (camelCase, PascalCase, snake_case or kebab-case) </PackageReleaseNotes>
+- DynamicEntity class now support a mechanism for automatically setting internal value kets accoding to a configured format (camelCase, PascalCase, snake_case or kebab-case) 
+- ILogger extension now supports .Trace()</PackageReleaseNotes>
+        <Configurations>Debug;Release;Debug | Production;Debug Production</Configurations>
+        <Platforms>AnyCPU</Platforms>
+        <AssemblyVersion>0.12.1</AssemblyVersion>
+        <FileVersion>0.12.1</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
       <NoWarn>0067;1701;1702;1705;1591</NoWarn>
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Production|AnyCPU'">
+      <NoWarn>0067;1701;1702;1705;1591</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug | Production' ">
+      <NoWarn>0067;1701;1702;1705;1591</NoWarn>
+      <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+      <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.9.0" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
       <PackageReference Include="System.Text.Json" Version="5.0.1" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.9.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+    </ItemGroup>
+    <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
+      <PackageReference Include="System.Text.Json" Version="4.6.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     </ItemGroup>
 
 </Project>

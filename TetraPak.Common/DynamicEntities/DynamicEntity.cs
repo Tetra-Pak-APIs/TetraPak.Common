@@ -17,16 +17,16 @@ namespace TetraPak.DynamicEntities
     public partial class DynamicEntity : IDictionary<string,object> 
     {
         IDictionary<string, object> _dictionary = new Dictionary<string, object>();
-        JsonKeyFormat? _jsonKeyFormat;
+        KeyTransformationFormat? _jsonKeyFormat;
 
-        public static JsonKeyFormat DefaultJsonKeyFormat { get; set; }
+        public static KeyTransformationFormat DefaultKeyTransformationFormat { get; set; }
 
         /// <summary>
         ///   Gets or sets the JSON key format used for all values. 
         /// </summary>
-        public JsonKeyFormat? JsonKeyFormat
+        public KeyTransformationFormat? JsonKeyFormat
         {
-            get => _jsonKeyFormat ?? DefaultJsonKeyFormat;
+            get => _jsonKeyFormat ?? DefaultKeyTransformationFormat;
             set => _jsonKeyFormat = value;
         }
 
@@ -42,7 +42,7 @@ namespace TetraPak.DynamicEntities
         protected void SetDictionary(IDictionary<string, object> dictionary) => _dictionary = dictionary;
         
         [DebuggerStepThrough]
-        public virtual TValue Get_<TValue>(TValue useDefault = default, [CallerMemberName] string caller = null) 
+        public virtual TValue Get<TValue>(TValue useDefault = default, [CallerMemberName] string caller = null) 
             => GetValue(JsonKey(caller), useDefault);
 
         public virtual TValue GetValue<TValue>(string key, TValue useDefault = default)
@@ -198,7 +198,7 @@ namespace TetraPak.DynamicEntities
             {
                 removeKeys(ignoreKeys); 
             }
-            var options = new JsonSerializerOptions { WriteIndented = indented  };
+            var options = new JsonSerializerOptions { WriteIndented = indented };
             return JsonSerializer.Serialize(this, options);  
         }
 
@@ -297,9 +297,9 @@ namespace TetraPak.DynamicEntities
     }
 
     /// <summary>
-    ///   Used to specify a format for JSON serialization.
+    ///   Used to specify a format for transforming keys (such as in JSON serialization).
     /// </summary>
-    public enum JsonKeyFormat
+    public enum KeyTransformationFormat
     {
         CamelCase,
         

@@ -47,9 +47,11 @@ namespace TetraPak
 
     public abstract class Outcome
     {
-        bool Result { get; set; }
+        readonly Exception _exception;
         
-        public Exception Exception { get; }
+        bool Result { get; set; }
+
+        public Exception Exception => _exception ?? new Exception("(no error message)");
 
 
         protected void SetResult(bool value) => Result = value;
@@ -66,7 +68,7 @@ namespace TetraPak
         protected Outcome(bool result, Exception exception = null)
         {
             Result = result;
-            Exception = exception;
+            _exception = exception;
         }
     }
 }

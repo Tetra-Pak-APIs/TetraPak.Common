@@ -61,7 +61,8 @@ namespace TetraPak
             KeyMapInfo keyMap,
             bool isRestricted = false)
         {
-            return new Dictionary<string, TValue>(self.ToArray().MapSafe(keyMap));
+            var mapped = self.ToArray().MapSafe(keyMap);
+            return new Dictionary<string, TValue>(mapped);
         }
 
         public static IEnumerable<KeyValuePair<string, TValue>> Map<TValue>(
@@ -83,7 +84,11 @@ namespace TetraPak
         {
             for (var i = 0; i < self.Length; i++)
             {
-                if (keyMap.Map.TryGetValue(self[i].Key, out var mappedKey))
+                if (self[i].Value is null)
+                    continue;
+
+                var key = self[i].Key;
+                if (keyMap.Map.TryGetValue(key, out var mappedKey))
                 {
                     yield return new KeyValuePair<string, TValue>(mappedKey, self[i].Value);
                 }

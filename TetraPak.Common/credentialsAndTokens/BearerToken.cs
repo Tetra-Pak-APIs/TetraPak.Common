@@ -7,11 +7,11 @@ namespace TetraPak
     /// </summary>
     public class BearerToken : ActorToken
     {
-        const string BearerQualifier = "Bearer ";
+        public const string Qualifier = "Bearer ";
 
         public override string ToString()
         {
-            return $"{BearerQualifier}{base.ToString()}";
+            return $"{Qualifier}{base.ToString()}";
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace TetraPak
 
             return new BearerToken
             {
-                Identity = s.Trim()
+                Identity = identity
             };
         }
 
@@ -81,10 +81,10 @@ namespace TetraPak
                 return false;
 
             value = value.Trim();
-            if (!value.StartsWith(BearerQualifier))
+            if (!value.StartsWith(Qualifier))
                 return false;
 
-            identity = value[BearerQualifier.Length..];
+            identity = value[Qualifier.Length..];
             return true;
         }
 
@@ -95,6 +95,17 @@ namespace TetraPak
         public BearerToken(string value, bool parse = true) 
         : base(value, parse)
         {
+        }
+    }
+    
+    public static class BearerTokenHelper
+    {
+        public static BearerToken ToBearerToken(this string self)
+        {
+            var token = self.EnsurePrefix(BearerToken.Qualifier);
+            return BearerToken.TryParse(token, out var bearerToken)
+                ? bearerToken
+                : throw new FormatException($"Cannot convert string \"{self}\" to bearer token");
         }
     }
 }

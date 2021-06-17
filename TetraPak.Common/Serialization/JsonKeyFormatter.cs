@@ -6,15 +6,15 @@ namespace TetraPak.Serialization
 {
     public static class JsonKeyFormatter
     {
-        public static string ToJsonKeyFormat(this string s, JsonKeyFormat format)
+        public static string ToJsonKeyFormat(this string s, KeyTransformationFormat transformationFormat)
         {
-            return format switch
+            return transformationFormat switch
             {
-                JsonKeyFormat.CamelCase => s.ToCamelCaseIdentifier(),
-                JsonKeyFormat.PascalCase => s.ToPascalCaseIdentifier(),
-                JsonKeyFormat.SnakeCase => s.ToSnakeCaseIdentifier(),
-                JsonKeyFormat.KebabCase => s.ToKebabCaseIdentifier(),
-                _ => throw new ArgumentOutOfRangeException(nameof(format))
+                KeyTransformationFormat.CamelCase => s.ToCamelCaseIdentifier(),
+                KeyTransformationFormat.PascalCase => s.ToPascalCaseIdentifier(),
+                KeyTransformationFormat.SnakeCase => s.ToSnakeCaseIdentifier(),
+                KeyTransformationFormat.KebabCase => s.ToKebabCaseIdentifier(),
+                _ => throw new ArgumentOutOfRangeException(nameof(transformationFormat))
             };
         }
         

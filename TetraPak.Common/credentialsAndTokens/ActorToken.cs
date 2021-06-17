@@ -73,7 +73,9 @@ namespace TetraPak
         
         public static implicit operator ActorToken(string stringValue) => new ActorToken(stringValue);
 
+#if NET5_0_OR_GREATER            
         [JsonConstructor]
+#endif
         public ActorToken()
         {
         }

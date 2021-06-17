@@ -2,7 +2,9 @@ using System;
 using System.Buffers;
 using System.Diagnostics;
 using System.Text.Json;
+#if NET5_0_OR_GREATER            
 using System.Text.Json.Serialization;
+#endif
 
 namespace TetraPak.Serialization
 {
@@ -19,13 +21,22 @@ namespace TetraPak.Serialization
             return JsonSerializer.Deserialize(bufferWriter.WrittenSpan, type, options);
         }
 
-        public static string ToJson(this object self, bool indented = false, JsonIgnoreCondition ignoreCondition = JsonIgnoreCondition.Never)
+#if NET5_0_OR_GREATER            
+        public static string ToJson(
+            this object self, 
+            bool indented = false, 
+            JsonIgnoreCondition ignoreCondition = JsonIgnoreCondition.Never)
+#else        
+        public static string ToJson(this object self, bool indented = false)
+#endif 
         {
             
             var options = new JsonSerializerOptions
             {
-                WriteIndented = indented, 
-                DefaultIgnoreCondition = ignoreCondition
+                WriteIndented = indented
+#if NET5_0_OR_GREATER            
+                , DefaultIgnoreCondition = ignoreCondition
+#endif
             };
             return JsonSerializer.Serialize(self, options);  
         }

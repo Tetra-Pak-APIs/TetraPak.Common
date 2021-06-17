@@ -1,10 +1,15 @@
-﻿namespace Tetrapak
+﻿using System;
+
+namespace TetraPak
 {
+    [Flags]
     public enum RuntimeEnvironment
     {
-        Production,
-        Migration,
-        Development,
-        Sandbox
+        Production = 10,
+        Migration = 20,
+        Testing = Migration,
+        Staging = Migration,
+        Development = 30,
+        Sandbox = 40
     }
 }
