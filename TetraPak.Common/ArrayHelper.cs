@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace TetraPak
@@ -28,5 +29,26 @@ namespace TetraPak
         
             return list.ToArray();
         }
+        
+        public static T[] EnumerableToArray<T>(this IEnumerable enumerable, bool skipTypeIncompatible = false)
+        {
+            var list = new List<T>();
+            var enumerator = enumerable.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                if (enumerator.Current is T tValue)
+                {
+                    list.Add(tValue);
+                    continue;
+                }
+
+                if (!skipTypeIncompatible)
+                    throw new InvalidCastException(
+                        $"Failed to create array from enumerable. One or more items cannot be cast as {typeof(T)}");
+            }
+
+            return list.ToArray();
+        }
+
     }
 }

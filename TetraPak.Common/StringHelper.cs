@@ -428,5 +428,20 @@ namespace TetraPak
 
         public static bool IsUnassigned(this string self, bool isWhitespaceAllowed = false) =>
             !self.IsAssigned(isWhitespaceAllowed);
+
+        public static string TrimWhitespace(this string self)
+        {
+            var sb = new StringBuilder();
+            var ca = self.ToCharArray();
+            for (var i = 0; i < ca.Length; i++)
+            {
+                var c = ca[i];
+                if (!char.IsWhiteSpace(c))
+                    sb.Append(c);
+
+            }
+
+            return sb.ToString();
+        }
     }
 }

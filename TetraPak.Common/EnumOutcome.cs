@@ -17,7 +17,7 @@ namespace TetraPak
         /// <summary>
         ///   Gets the number of entities in the outcome.
         /// </summary>
-        public int Count { get; }
+        public virtual int Count { get; }
 
 #if DEBUG
         public string DebugDisplay => $"Count={Count}; Total={TotalCount}";
@@ -44,6 +44,29 @@ namespace TetraPak
         {
             TotalCount = totalCount;
             Count = value?.Count ?? 0;
+        }
+    }
+
+    public class ChunkOutcome<T> : EnumOutcome<T>
+    {
+        public ReadChunk Chunk { get; }
+
+        public override int Count => Chunk.Count;
+
+        public int Skip => Chunk.Skip;
+        
+        public static ChunkOutcome<T> Success(IReadOnlyCollection<T> value, ReadChunk chunk, int totalCount = 0) 
+            => new ChunkOutcome<T>(true, value, chunk, totalCount == 0 ? value.Count : totalCount);
+
+        protected ChunkOutcome(
+            bool result, 
+            IReadOnlyCollection<T> value,
+            ReadChunk chunk,
+            int totalCount, 
+            Exception exception = null) 
+        : base(result, value, totalCount, exception)
+        {
+            Chunk = chunk;
         }
     }
 }

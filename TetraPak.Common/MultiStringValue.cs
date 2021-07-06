@@ -12,7 +12,7 @@ namespace TetraPak
     /// </summary>
     [Serializable, JsonConverter(typeof(JsonStringValueSerializer<MultiStringValue>))]
     [DebuggerDisplay("{" + nameof(StringValue) + "}")]
-    public class MultiStringValue : StringValueBase //, IEnumerable<string>
+    public class MultiStringValue : StringValueBase 
     {
         public const char Separator = ',';
         
@@ -21,9 +21,19 @@ namespace TetraPak
         
         public static MultiStringValue Empty { get; } = new MultiStringValue();
 
-        public static bool TryParse<T>(string stringValue, out T multiStringValue, StringComparison comparison = StringComparison.Ordinal) where T : MultiStringValue
+        public static bool TryParse(string stringValue, out MultiStringValue multiStringValue,
+            StringComparison comparison = StringComparison.Ordinal)
+        {
+            return TryParse<MultiStringValue>(stringValue, out multiStringValue, comparison);
+        }
+        
+        public static bool TryParse<T>(string stringValue, out T multiStringValue, StringComparison comparison = StringComparison.Ordinal)
+        where T : MultiStringValue
         {
             multiStringValue = (T) Activator.CreateInstance(typeof(T));
+            if (multiStringValue is null)
+                return false;
+                
             var parseOutcome = multiStringValue.tryParse(stringValue, comparison);
             if (parseOutcome)
             {

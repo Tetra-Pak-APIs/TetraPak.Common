@@ -161,8 +161,6 @@ namespace TetraPak.Serialization
                     
                 case JsonTokenType.Number:
                     return reader.GetDouble();
-                    // var s = reader.GetString();
-                    // return s?.Contains(".") ?? false ? reader.GetDecimal() : reader.GetInt64();
 
                 case JsonTokenType.True:
                     return true;

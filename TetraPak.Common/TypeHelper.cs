@@ -94,18 +94,69 @@ namespace TetraPak
                 _ => throw new NotSupportedException($"Unsupported type code: {typeCode}")
             };
         }
-        
-        public static bool IsGenericBase(this Type self, Type genericType)
-        {
-            if (!self.IsGenericType)
-                return false;
 
-            if (!genericType.IsGenericType || genericType.GenericTypeArguments.Length != 0)
+        public static bool IsGenericBase(this Type self, Type genericType, bool inherited = false)
+        {
+            if (!genericType.IsGenericType || genericType.GenericTypeArguments.Length != 0) 
                 throw new ArgumentException($"Expected generic base type (no generic arguments) but found {genericType}");
 
-            return self.BaseType?.Is(genericType.BaseType) ?? false;
+            var targetGenericName = getGenericName(genericType);
+            while (true)
+            {
+                if (!self.IsGenericType)
+                {
+                    if (inherited)
+                        goto next;
+                }
+
+                var genericName = getGenericName(self);
+                if (genericName == targetGenericName)
+                    return true;
+
+                next:
+
+                if (!inherited || self.BaseType is null) 
+                    return false;
+
+                self = self.BaseType;
+            }
         }
-        
+
+        public static bool TryGetGenericBase(this Type self, Type genericType, out Type type)
+        {
+            if (!genericType.IsGenericType || genericType.GenericTypeArguments.Length != 0) 
+                throw new ArgumentException($"Expected generic base type (no generic arguments) but found {genericType}");
+
+            var targetGenericName = getGenericName(genericType);
+            while (true)
+            {
+                if (!self.IsGenericType)
+                    goto next;
+
+                var genericName = getGenericName(self);
+                if (genericName == targetGenericName)
+                {
+                    type = self;
+                    return true;
+                }
+
+                next:
+                
+                if (self.BaseType is null)
+                {
+                    type = null;
+                    return false;
+                }
+
+                self = self.BaseType;
+            }
+        }
+
+        static string getGenericName(Type type)
+        {
+            return $"{type.Namespace}.{type.Name}";
+        }
+
         public static bool ImplementsInterface<TInterface>(this Type type) 
             => type.GetInterface(typeof(TInterface).FullName ?? string.Empty) is {};
         
@@ -259,8 +310,12 @@ namespace TetraPak
 
             if (type.IsGenericType)
             {
-                var typeArgs = type.GenericTypeArguments;
                 items = (IEnumerable) self;
+                var testCollectionType = typeof(IEnumerable<>).MakeGenericType(itemType);
+                if (testCollectionType.IsAssignableFrom(type))
+                    return true;
+                
+                var typeArgs = type.GenericTypeArguments;
                 return typeArgs.Length == 1 && itemType.IsAssignableFrom(typeArgs[0]);
             }
 
@@ -293,7 +348,6 @@ namespace TetraPak
             items = list;
             return true;
         }
-
 
         public static Type GetCollectionElementType(this Type self)
         {

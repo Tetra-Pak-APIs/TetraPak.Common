@@ -27,15 +27,16 @@ namespace TetraPak.Caching
             get
             {
                 var now = DateTime.UtcNow;
-                return getMaxLifeSpan() == TimeSpan.Zero
-                    ? DateTime.UtcNow < SpawnTimeUtc.Add(getLifeSpan(null))
-                    : now < InitialSpawnTimeUtc.Add(getMaxLifeSpan()) && now < SpawnTimeUtc.Add(getLifeSpan(null));
+                var maxLifeSpan = getMaxLifeSpan(); 
+                return maxLifeSpan == TimeSpan.Zero
+                    ? DateTime.UtcNow < SpawnTimeUtc.Add(getLifeSpan())
+                    : now < InitialSpawnTimeUtc.Add(maxLifeSpan) && now < SpawnTimeUtc.Add(getLifeSpan());
             }
         }
 
         public override string ToString() => SimpleCache.MakeKey(Repository, Key);
 
-        TimeSpan getLifeSpan(TimeSpan? lifeSpan) => lifeSpan ?? _customLifeSpan ?? _repositories.GetLifeSpan(Repository);
+        TimeSpan getLifeSpan() => _customLifeSpan ?? _repositories.GetLifeSpan(Repository);
 
         TimeSpan getMaxLifeSpan() => _customMaxLifeSpan ?? _repositories.GetMaxLifeSpan(Repository);
 

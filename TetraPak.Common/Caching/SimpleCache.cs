@@ -27,10 +27,10 @@ namespace TetraPak.Caching
         public TimeSpan DefaultLifeSpan { get; set; } = TimeSpan.FromMinutes(1);
         
         /// <inheritdoc />
-        public TimeSpan DefaultExtendedLifeSpan { get; set; } = TimeSpan.MinValue;
+        public TimeSpan DefaultExtendedLifeSpan { get; set; } = TimeSpan.Zero;
 
         /// <inheritdoc />
-        public TimeSpan DefaultMaxLifeSpan { get; set; } = TimeSpan.MaxValue;
+        public TimeSpan DefaultMaxLifeSpan { get; set; } = TimeSpan.Zero;
         
         /// <summary>
         ///   Gets or sets an interval between automatic purging processes.

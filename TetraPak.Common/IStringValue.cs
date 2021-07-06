@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using TetraPak.Serialization;
 
@@ -29,6 +30,20 @@ namespace TetraPak
         public string StringValue { get; protected set; } // todo consider making StringValueBase immutable
 
         string parse(string stringValue) => OnParse(stringValue);
+
+        public static T MakeStringValue<T>(string s) 
+        {
+            if (!typeof(IStringValue).IsAssignableFrom(typeof(T)))
+                throw new TargetInvocationException(
+                    $"Cannot make string value of type {typeof(T)}. Not a {typeof(IStringValue)}", null);
+                
+            var ctor = typeof(T).GetConstructor(new[] {typeof(string)});
+            if (ctor is null)
+                throw new TargetInvocationException(
+                    $"Cannot make {typeof(T)}. Expected ctor with single string parameter", null);
+
+            return (T) ctor.Invoke(new object[] {s});
+        }
 
         protected virtual string OnParse(string stringValue)
         {

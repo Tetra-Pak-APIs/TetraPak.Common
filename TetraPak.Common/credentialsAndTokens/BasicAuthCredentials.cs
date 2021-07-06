@@ -77,7 +77,7 @@ namespace TetraPak
         }
 
         public BasicAuthCredentials(string identity, string secret, string newSecret = null)
-            : base(identity, secret, newSecret)
+        : base(identity, secret, newSecret)
         {
         }
     }

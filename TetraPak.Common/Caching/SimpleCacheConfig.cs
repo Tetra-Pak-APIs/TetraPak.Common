@@ -13,8 +13,6 @@ namespace TetraPak.Caching
         SimpleCache _simpleCache;
         readonly Dictionary<string, SimpleCacheRepositoryConfig> _repositoryConfigs;
 
-        protected override string SectionIdentifier { get; }
-
         public IEnumerator<KeyValuePair<string, SimpleCacheRepositoryConfig>> GetEnumerator()
         {
             return _repositoryConfigs.GetEnumerator();
@@ -58,7 +56,6 @@ namespace TetraPak.Caching
         {
             _simpleCache = simpleCache;
             _repositoryConfigs = new Dictionary<string, SimpleCacheRepositoryConfig>();
-            SectionIdentifier = sectionIdentifier;
             loadRepositoryConfigs();
         }
 
@@ -86,9 +83,7 @@ namespace TetraPak.Caching
         TimeSpan? _extendedLifeSpan;
         TimeSpan? _maxLifeSpan;
         // ReSharper restore NotAccessedField.Local
-
-        protected override string SectionIdentifier { get; }
-
+        
         /// <summary>
         ///   Gets or sets the life span for entries of the configured cache repository.
         /// </summary>

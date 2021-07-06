@@ -26,14 +26,14 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
-        public static void Trace(this ILogger logger, string message, string referenceId = null)
+        public static void Trace(this ILogger logger, string message, string messageId = null)
         {
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-            logger?.LogTrace(Format(message, referenceId));
+            logger?.LogTrace(Format(message, messageId));
         }
         
         /// <summary>
@@ -45,14 +45,14 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
-        public static void Debug(this ILogger logger, string message, string referenceId = null)
+        public static void Debug(this ILogger logger, string message, string messageId = null)
         {
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-            logger?.LogDebug(Format(message, referenceId));
+            logger?.LogDebug(Format(message, messageId));
         }
         
         /// <summary>
@@ -64,14 +64,14 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
-        public static void Warning(this ILogger logger, string message, string referenceId = null)
+        public static void Warning(this ILogger logger, string message, string messageId = null)
         {
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-            logger?.LogWarning(Format(message, referenceId));
+            logger?.LogWarning(Format(message, messageId));
         }
 
         /// <summary>
@@ -83,14 +83,14 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
-        public static void Information(this ILogger logger, string message, string referenceId = null)
+        public static void Information(this ILogger logger, string message, string messageId = null)
         {
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-            logger?.LogInformation(Format(message, referenceId));
+            logger?.LogInformation(Format(message, messageId));
         }
         
         /// <summary>
@@ -105,14 +105,15 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
-        public static void Error(this ILogger logger, Exception exception, string message = null, string referenceId = null)
+        public static void Error(this ILogger logger, Exception exception, string message = null, string messageId = null)
         {
+            var logMessage = Format(exception, message, messageId);
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
-            logger?.LogError(exception, $"{Prefix}{message ?? exception.Message}");
+            logger?.LogError(exception, logMessage);
         }
 
         /// <summary>
@@ -121,18 +122,18 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   The message to be logged.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
         /// <returns>
         ///   A standardized logging message (<see cref="string"/> value).
         /// </returns>
-        public static string Format(string message, string referenceId = null)
+        public static string Format(string message, string messageId = null)
         {
-            return string.IsNullOrEmpty(referenceId) 
+            return string.IsNullOrEmpty(messageId) 
                 ? $"{Prefix}{message}"
-                : $"{Prefix} [#{referenceId}] {message}";
+                : $"{Prefix} [#{messageId}] {message}";
         }
 
         /// <summary>
@@ -144,18 +145,18 @@ namespace TetraPak.Logging
         /// <param name="message">
         ///   A message to be logged.
         /// </param>
-        /// <param name="referenceId">
+        /// <param name="messageId">
         ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes).
+        ///   A unique string value to be used for referencing/diagnostics purposes.
         /// </param>
         /// <returns>
         ///   A standardized logging message (<see cref="string"/> value).
         /// </returns>
-        public static string Format(Exception exception, string message, string referenceId = null)
+        public static string Format(Exception exception, string message, string messageId = null)
         {
-            return string.IsNullOrEmpty(referenceId)
+            return string.IsNullOrEmpty(messageId)
                 ? $"{Prefix}{message ?? exception.Message}"
-                : $"{Prefix} [#{referenceId}] {message ?? exception.Message}";
+                : $"{Prefix} [#{messageId}] {message ?? exception.Message}";
         }
 
         /// <summary>
@@ -177,7 +178,10 @@ namespace TetraPak.Logging
         /// <typeparam name="TValue">
         ///   The dictionary value <see cref="Type"/>.
         /// </typeparam>
-        public static void LogDictionary<TKey,TValue>(this ILogger logger, IDictionary<TKey,TValue> dictionary, LogLevel level)
+        public static void LogDictionary<TKey,TValue>(
+            this ILogger logger, 
+            IDictionary<TKey,TValue> dictionary, 
+            LogLevel level)
         {
             // ReSharper disable once TemplateIsNotCompileTimeConstantProblem
             var message = new StringBuilder();

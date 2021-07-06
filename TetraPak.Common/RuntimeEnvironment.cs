@@ -5,11 +5,16 @@ namespace TetraPak
     [Flags]
     public enum RuntimeEnvironment
     {
-        Production = 10,
-        Migration = 20,
+        Unknown = 0,
+        Sandbox = 10,
+        Development = 20,
+        
+        // 'migration" tends to have a lot of names ...
+        Migration = 30,
+        Test = Migration,
         Testing = Migration,
         Staging = Migration,
-        Development = 30,
-        Sandbox = 40
+        
+        Production = 40,
     }
 }

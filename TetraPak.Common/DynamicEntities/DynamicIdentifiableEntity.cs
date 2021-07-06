@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using TetraPak.Serialization;
 
@@ -45,7 +44,7 @@ namespace TetraPak.DynamicEntities
        
         void init(TId id)
         {
-            Id = id;
+            Id = id ?? throw new ArgumentNullException(nameof(id));
         }
     }
 }

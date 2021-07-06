@@ -36,6 +36,43 @@ namespace TetraPak
             return environment == "Development";
         }
 
+        public static T GetValue<T>(this IConfigurationSection section, string key, T useDefault, ValueParser<T> parser)
+        {
+            var s = section[key];
+            if (string.IsNullOrEmpty(s))
+                return useDefault;
+
+            return !parser(s, out var value) 
+                ? useDefault 
+                : value;
+        }
+
+        public static List<T> GetList<T>(this IConfiguration configuration, string key, ILogger logger = null)
+        {
+            try
+            {
+                return configuration.GetSection(key).Get<List<T>>();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"Invalid configuration section: '{key}'. {ex}");
+                return new List<T>();
+            }
+        }
+        
+        public static T[] GetArray<T>(this IConfiguration configuration, string key, ILogger logger = null)
+        {
+            try
+            {
+                return configuration.GetList<T>(key).ToArray();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, $"Invalid configuration section: '{key}'. {ex}");
+                return Array.Empty<T>();
+            }
+        }
+            
         /// <summary>
         ///   Gets a <see cref="bool"/> value from the section, or a specified default value.
         /// </summary>
@@ -168,43 +205,6 @@ namespace TetraPak
             }
 
             return false;
-        }
-        
-        public static T GetValue<T>(this IConfigurationSection section, string key, T useDefault, ValueParser<T> parser)
-        {
-            var s = section[key];
-            if (string.IsNullOrEmpty(s))
-                return useDefault;
-
-            return !parser(s, out var value) 
-                ? useDefault 
-                : value;
-        }
-
-        public static List<T> GetList<T>(this IConfiguration configuration, string key, ILogger logger = null)
-        {
-            try
-            {
-                return configuration.GetSection(key).Get<List<T>>();
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, $"Invalid configuration section: '{key}'. {ex}");
-                return new List<T>();
-            }
-        }
-        
-        public static T[] GetArray<T>(this IConfiguration configuration, string key, ILogger logger = null)
-        {
-            try
-            {
-                return configuration.GetList<T>(key).ToArray();
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, $"Invalid configuration section: '{key}'. {ex}");
-                return Array.Empty<T>();
-            }
         }
         
         /// <summary>

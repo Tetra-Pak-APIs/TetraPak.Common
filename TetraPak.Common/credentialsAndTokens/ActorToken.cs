@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json.Serialization;
 
 namespace TetraPak
@@ -8,6 +9,8 @@ namespace TetraPak
 
     public class ActorToken : Credentials, IStringValue
     {
+        bool? _isJwt;
+        
         public string Value => Identity;
 
         /// <inheritdoc />
@@ -16,6 +19,8 @@ namespace TetraPak
         public override string ToString() => StringValue;
 
         public override bool IsAssigned => !string.IsNullOrWhiteSpace(Identity);
+
+        public bool IsJwt => _isJwt ?? (_isJwt = checkIsJwt()).Value;
 
         /// <summary>
         ///   Attempts parsing the value. 
@@ -58,7 +63,7 @@ namespace TetraPak
                 token = bearerToken;
                 return true;
             }
-
+            
             token = null;
             if (string.IsNullOrWhiteSpace(s))
                 return false;
@@ -72,6 +77,34 @@ namespace TetraPak
         public static implicit operator string(ActorToken token) => token.ToString();
         
         public static implicit operator ActorToken(string stringValue) => new ActorToken(stringValue);
+
+        /// <summary>
+        ///   Returns the token as a <see cref="ToJwtSecurityToken"/> (if applicable).
+        /// </summary>
+        /// <returns>
+        ///   A <see cref="ToJwtSecurityToken"/> if the token has that form; otherwise <c>null</c>.
+        /// </returns>
+        public JwtSecurityToken ToJwtSecurityToken()
+        {
+            if (_isJwt.HasValue && !_isJwt.Value)
+                return null;
+
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                return handler.ReadJwtToken(Identity);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        
+        bool checkIsJwt()
+        {
+            var jwt = ToJwtSecurityToken();
+            return jwt is { };
+        }
 
 #if NET5_0_OR_GREATER            
         [JsonConstructor]

@@ -28,8 +28,10 @@ namespace TetraPak.Serialization
             JsonIgnoreCondition ignoreCondition = JsonIgnoreCondition.Never)
 #else        
         public static string ToJson(this object self, bool indented = false)
-#endif 
+#endif
         {
+            if (self is null)
+                return null;
             
             var options = new JsonSerializerOptions
             {
