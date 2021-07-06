@@ -13,7 +13,7 @@ namespace TetraPak.Caching
     // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
     public class SimpleCache : ITimeLimitedRepositories
     {
-        readonly IDictionary<string, Entry> _values;
+        readonly IDictionary<string, SimpleCacheEntry> _values;
         TaskCompletionSource<bool> _purgingTcs;
         DateTime _lastPurge;
         SimpleCacheConfig _config;
@@ -48,13 +48,13 @@ namespace TetraPak.Caching
         /// <inheritdoc />
         public Task AddAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null)
         {
-            PurgeDeadEntriesAsync();
+            OnPurgeDeadEntriesAsync();
             lock (_values)
             {
                 var valueKey = MakeKey(repository, key);
                 if (!_values.TryGetValue(valueKey, out var entry))
                 {
-                    _values.Add(valueKey, new Entry(this, repository, key,value, customLifeSpan));
+                    _values.Add(valueKey, new SimpleCacheEntry(this, repository, key,value, customLifeSpan));
                     return Task.CompletedTask;
                 }
 
@@ -70,7 +70,7 @@ namespace TetraPak.Caching
         /// <inheritdoc />
         public Task UpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null)
         {
-            PurgeDeadEntriesAsync();
+            OnPurgeDeadEntriesAsync();
             lock (_values)
             {
                 var valueKey = MakeKey(repository, key);
@@ -86,13 +86,13 @@ namespace TetraPak.Caching
         /// <inheritdoc />
         public Task AddOrUpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan)
         {
-            PurgeDeadEntriesAsync();
+            OnPurgeDeadEntriesAsync();
             lock (_values)
             {
                 var valueKey = MakeKey(repository, key);
                 if (!_values.TryGetValue(valueKey, out var entry))
                 {
-                    _values.Add(valueKey, new Entry(this, repository, key, value, customLifeSpan));
+                    _values.Add(valueKey, new SimpleCacheEntry(this, repository, key, value, customLifeSpan));
                     return Task.CompletedTask;
                 }
 
@@ -100,7 +100,7 @@ namespace TetraPak.Caching
                 {
                     Logger.Trace($"Updating dead cached value '{valueKey}'. Removing and re-adding it");
                     _values.Remove(valueKey);
-                    _values.Add(valueKey, new Entry(this, repository, key, value, customLifeSpan));
+                    _values.Add(valueKey, new SimpleCacheEntry(this, repository, key, value, customLifeSpan));
                     return Task.CompletedTask;
                 }
                 entry.UpdateValue(value, customLifeSpan);
@@ -111,31 +111,38 @@ namespace TetraPak.Caching
         /// <inheritdoc />
         public TimeSpan GetLifeSpan(string repository)
         {
-            return _config.GetRepositoryConfig(repository)?.LifeSpan ?? DefaultLifeSpan;
+            return _config.GetRepositoryOptions(repository)?.LifeSpan ?? DefaultLifeSpan;
         }
 
         /// <inheritdoc />
         public TimeSpan GetMaxLifeSpan(string repository)
         {
-            return _config.GetRepositoryConfig(repository)?.MaxLifeSpan ?? DefaultMaxLifeSpan;
+            return _config.GetRepositoryOptions(repository)?.MaxLifeSpan ?? DefaultMaxLifeSpan;
         }
 
         /// <inheritdoc />
         public TimeSpan GetExtendedLifeSpan(string repository)
         {
-            return _config.GetRepositoryConfig(repository)?.ExtendedLifeSpan ?? DefaultLifeSpan;
+            return _config.GetRepositoryOptions(repository)?.ExtendedLifeSpan ?? DefaultLifeSpan;
         }
 
         /// <inheritdoc />
-        public virtual Task<Outcome<T>> GetAsync<T>(string repository, string key)
+        public virtual Task<Outcome<T>> GetAsync<T>(string repository, string key) => GetAsync<T>(repository, key, out _);
+
+        /// <inheritdoc />
+        public virtual Task<Outcome<T>> GetAsync<T>(string repository, string key, out TimeSpan remainingLifeSpan)
         {
             lock (_values)
             {
                 var valueKey = MakeKey(repository, key);
                 if (!_values.TryGetValue(valueKey, out var entry) || !entry.IsLive)
+                {
+                    remainingLifeSpan = TimeSpan.Zero;
                     return Task.FromResult(Outcome<T>.Fail(
                         new ArgumentOutOfRangeException(nameof(valueKey), $"Unknown value: {valueKey}")));
+                }
 
+                remainingLifeSpan = entry.GetRemainingLifeSpan();
                 return Task.FromResult(entry.GetValue<T>());
             }
         }
@@ -144,6 +151,17 @@ namespace TetraPak.Caching
         public virtual Task DeleteAsync(string repository, string key)
         {
             return OnDeleteAsync(repository, key, false);
+        }
+
+        /// <inheritdoc />
+        public virtual Task ConfigureAsync(string repository, ITimeLimitedRepositoryOptions options)
+        {
+            if (options is SimpleTimeLimitedRepositoryConfig config)
+            {
+                config.WithCache(this);
+            }
+            _config.Configure(repository, options);
+            return Task.CompletedTask;
         }
 
         /// <summary>
@@ -182,7 +200,7 @@ namespace TetraPak.Caching
         /// <summary>
         ///   Gets called automatically (in a background thread) to remove dead entries. 
         /// </summary>
-        protected virtual Task PurgeDeadEntriesAsync()
+        protected virtual Task OnPurgeDeadEntriesAsync()
         {
             lock (_values)
             {
@@ -234,9 +252,9 @@ namespace TetraPak.Caching
 
         internal static string MakeKey(string repository, string key) => $"{repository}://{key}";
 
-        internal SimpleCacheRepositoryConfig GetRepositoryConfig(string repository)
+        internal ITimeLimitedRepositoryOptions GetRepositoryOptions(string repository)
         {
-            return _config?.GetRepositoryConfig(repository) ?? SimpleCacheRepositoryConfig.AsDefault(this);
+            return _config?.GetRepositoryOptions(repository) ?? SimpleTimeLimitedRepositoryConfig.AsDefault(this);
         }
 
         public SimpleCache WithConfiguration(SimpleCacheConfig config)
@@ -248,7 +266,7 @@ namespace TetraPak.Caching
         public SimpleCache(ILogger<SimpleCache> logger)
         {
             Logger = logger;
-            _values = new Dictionary<string, Entry>();
+            _values = new Dictionary<string, SimpleCacheEntry>();
         }
     }
 }

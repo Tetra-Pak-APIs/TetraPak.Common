@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace TetraPak.Caching
 {
     [DebuggerDisplay("{ToString()}")]
-    class Entry : ITimeLimitedRepositoryEntry
+    class SimpleCacheEntry : ITimeLimitedRepositoryEntry
     {
         readonly ITimeLimitedRepositories _repositories;
         
@@ -26,12 +26,33 @@ namespace TetraPak.Caching
         {
             get
             {
-                var now = DateTime.UtcNow;
-                var maxLifeSpan = getMaxLifeSpan(); 
-                return maxLifeSpan == TimeSpan.Zero
-                    ? DateTime.UtcNow < SpawnTimeUtc.Add(getLifeSpan())
-                    : now < InitialSpawnTimeUtc.Add(maxLifeSpan) && now < SpawnTimeUtc.Add(getLifeSpan());
+                var remaining = GetRemainingLifeSpan();
+                return remaining != TimeSpan.Zero;
+                // var now = DateTime.UtcNow; obsolete
+                // var maxLifeSpan = getMaxLifeSpan(); 
+                // return maxLifeSpan == TimeSpan.Zero
+                //     ? DateTime.UtcNow < SpawnTimeUtc.Add(getLifeSpan())
+                //     : now < InitialSpawnTimeUtc.Add(maxLifeSpan) && now < SpawnTimeUtc.Add(getLifeSpan());
             }
+        }
+
+        public TimeSpan GetRemainingLifeSpan(DateTime? from = null)
+        {
+            from ??= DateTime.UtcNow;
+            var maxLifeSpan = getMaxLifeSpan();
+            var spawnTime = maxLifeSpan == TimeSpan.Zero
+                ? SpawnTimeUtc
+                : InitialSpawnTimeUtc;
+            
+            var lifeSpan = getLifeSpan();
+            if (maxLifeSpan != TimeSpan.Zero && lifeSpan > maxLifeSpan)
+            {
+                lifeSpan = maxLifeSpan;
+            }
+            var expires = spawnTime.Add(lifeSpan);
+            return from < expires 
+                ? expires.Subtract(from.Value) 
+                : TimeSpan.Zero;
         }
 
         public override string ToString() => SimpleCache.MakeKey(Repository, Key);
@@ -89,7 +110,7 @@ namespace TetraPak.Caching
             SpawnTimeUtc = DateTime.UtcNow;
         }
 
-        public Entry(
+        public SimpleCacheEntry(
             ITimeLimitedRepositories repositories,
             string repository,
             string key,

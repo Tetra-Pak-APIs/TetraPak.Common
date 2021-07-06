@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TetraPak.Configuration;
@@ -8,74 +6,12 @@ using TetraPak.Logging;
 
 namespace TetraPak.Caching
 {
-    public class SimpleCacheConfig : ConfigurationSection, IEnumerable<KeyValuePair<string,SimpleCacheRepositoryConfig>>
-    {
-        SimpleCache _simpleCache;
-        readonly Dictionary<string, SimpleCacheRepositoryConfig> _repositoryConfigs;
-
-        public IEnumerator<KeyValuePair<string, SimpleCacheRepositoryConfig>> GetEnumerator()
-        {
-            return _repositoryConfigs.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-        
-        internal static string ValidateIsAssigned(string sectionIdentifier)
-        {
-            return string.IsNullOrWhiteSpace(sectionIdentifier)
-                ? throw new ArgumentNullException(nameof(sectionIdentifier))
-                : sectionIdentifier;
-        }
-
-        void loadRepositoryConfigs()
-        {
-            var childSections = Section.GetChildren();
-            foreach (var childSection in childSections)
-            {
-                var config = new SimpleCacheRepositoryConfig(_simpleCache, Section, Logger, childSection.Key);
-                _repositoryConfigs.Add(childSection.Key, config);
-            }
-        }
-        
-        public SimpleCacheRepositoryConfig GetRepositoryConfig(string repository)
-        {
-            return _repositoryConfigs.TryGetValue(repository, out var config)
-                ? config
-                : null;
-        }
-
-        public SimpleCacheConfig(
-            SimpleCache simpleCache,
-            IConfiguration configuration, 
-            ILogger logger, 
-            string sectionIdentifier = null) 
-        : base(configuration, logger, ValidateIsAssigned(sectionIdentifier))
-        {
-            _simpleCache = simpleCache;
-            _repositoryConfigs = new Dictionary<string, SimpleCacheRepositoryConfig>();
-            loadRepositoryConfigs();
-        }
-
-        public SimpleCacheConfig WithCache(SimpleCache cache)
-        {
-            _simpleCache = cache;
-            foreach (var config in _repositoryConfigs.Values)
-            {
-                config.WithCache(cache);
-            }
-            return this;
-        }
-    }
-
     /// <summary>
     ///   Represents configuration for a named cache repository.
     /// </summary>
     /// <seealso cref="SimpleCache"/>
     /// <seealso cref="SimpleCacheConfig"/>
-    public class SimpleCacheRepositoryConfig : ConfigurationSection
+    public class SimpleTimeLimitedRepositoryConfig : ConfigurationSection, ITimeLimitedRepositoryOptions
     {
         SimpleCache _simpleCache;
         // ReSharper disable NotAccessedField.Local
@@ -151,7 +87,7 @@ namespace TetraPak.Caching
             set => _maxLifeSpan = value;
         }
         
-        internal static SimpleCacheRepositoryConfig AsDefault(SimpleCache simpleCache)
+        internal static SimpleTimeLimitedRepositoryConfig AsDefault(SimpleCache simpleCache)
         {
             return new()
             {
@@ -161,25 +97,32 @@ namespace TetraPak.Caching
             };
         }
         
-        internal SimpleCacheRepositoryConfig WithCache(SimpleCache cache)
+        internal SimpleTimeLimitedRepositoryConfig WithCache(SimpleCache cache)
         {
             _simpleCache = cache;
             return this;
         }
 
-        public SimpleCacheRepositoryConfig(
+        public static SimpleTimeLimitedRepositoryConfig Zero => new SimpleTimeLimitedRepositoryConfig
+        {
+            _lifeSpan = TimeSpan.Zero,
+            _extendedLifeSpan = TimeSpan.Zero,
+            _maxLifeSpan = TimeSpan.Zero
+        };
+
+        public SimpleTimeLimitedRepositoryConfig(
             SimpleCache simpleCache,
             IConfiguration configuration, 
             ILogger logger, 
             string sectionIdentifier) 
-        : base(configuration, logger,  SimpleCacheConfig.ValidateIsAssigned(sectionIdentifier))
+            : base(configuration, logger,  SimpleCacheConfig.ValidateIsAssigned(sectionIdentifier))
         {
             _simpleCache = simpleCache;
-            SectionIdentifier = sectionIdentifier;
         }
 
-        SimpleCacheRepositoryConfig() : base(null, null)
+        SimpleTimeLimitedRepositoryConfig() : base(null, null)
         {
+            
         }
     }
 }

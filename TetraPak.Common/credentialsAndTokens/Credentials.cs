@@ -8,6 +8,9 @@ namespace TetraPak
     [JsonConverter(typeof(DynamicEntityJsonConverter<Credentials>))]
     public class Credentials : DynamicIdentifiableEntity<string>, IDisposable
     {
+        const string KeySecret = "secret";
+        const string KeyNewSecret = "newSecret";
+        
         [Newtonsoft.Json.JsonIgnore]
         [JsonIgnore]
         public string Identity
@@ -16,18 +19,32 @@ namespace TetraPak
             set => Id = value;
         }
 
-        [JsonPropertyName("secret")]
+        [JsonPropertyName(KeySecret)]
         public string Secret
         {
-            get => GetValue<string>("secret");
-            set => SetValue("secret", value);
+            get => GetValue<string>(KeySecret);
+            set => SetValue(KeySecret, value);
         }
 
-        [JsonPropertyName("newSecret")]
+        [JsonPropertyName(KeyNewSecret)]
         public string NewSecret
         {
-            get => GetValue<string>("newSecret");
-            set => SetValue("newSecret", value);
+            get => GetValue<string>(KeyNewSecret);
+            set => SetValue(KeyNewSecret, value);
+        }
+
+        /// <summary>
+        ///   Clones the entity without any secrets, to support scenarios where secrets are not necessary.
+        /// </summary>
+        /// <returns>
+        ///   A cloned <see cref="Credentials"/>.
+        /// </returns>
+        public Credentials CloneWithoutSecrets()
+        {
+            var clone = Clone<Credentials>();
+            clone.SetValue<string>(KeySecret, null);
+            clone.SetValue<string>(KeyNewSecret, null);
+            return clone;
         }
 
         public virtual bool IsAssigned => !string.IsNullOrWhiteSpace(Identity) && !string.IsNullOrWhiteSpace(Secret);

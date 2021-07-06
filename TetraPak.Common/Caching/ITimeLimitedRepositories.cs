@@ -86,6 +86,8 @@ namespace TetraPak.Caching
         /// </returns>
         Task<Outcome<T>> GetAsync<T>(string repository, string key);
 
+        Task<Outcome<T>> GetAsync<T>(string repository, string key, out TimeSpan remainingLifeSpan);
+        
         /// <summary>
         ///   Adds a new time limited value.
         /// </summary>
@@ -162,5 +164,16 @@ namespace TetraPak.Caching
         ///   The <paramref name="key"/> was not recognized.
         /// </exception>
         Task DeleteAsync(string repository, string key);
+
+        /// <summary>
+        ///   Creates or configures a time limited repository.
+        /// </summary>
+        /// <param name="repository">
+        ///   Identifies the repository to remove the value from.
+        /// </param>
+        /// <param name="options">
+        ///   Specifies the repository configuration.
+        /// </param>
+        public Task ConfigureAsync(string repository, ITimeLimitedRepositoryOptions options);
     }
 }
