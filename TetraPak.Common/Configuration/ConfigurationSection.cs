@@ -99,9 +99,7 @@ namespace TetraPak.Configuration
 
             var stringValue = Section[propertyName];
             return parser(stringValue, out var sectionValue) ? sectionValue : useDefault;
-
-            // return Section.GetValue(propertyName, useDefault); // obsolete
-
+            
             bool tryGetFieldValue(out T value)
             {
                 value = default;

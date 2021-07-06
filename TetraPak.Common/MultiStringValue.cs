@@ -237,10 +237,6 @@ namespace TetraPak
             Items = items;
             StringValue = Items.ConcatCollection();
         }
-        
-        // public MultiStringValue(IEnumerable<string> items) : this(items?.ToArray() ?? new string[0]) obsolete
-        // {
-        // }
 
         public static MultiStringValue WithoutDuplicates(params string[] items)
         {

@@ -115,27 +115,6 @@ namespace TetraPak
             return section[key].TryParseConfiguredBool(out var value)
                 ? value
                 : useDefault;
-            
-            // if (string.IsNullOrEmpty(s)) obsolete
-            //     return useDefault;
-            //
-            // if (bool.TryParse(s, out var boolValue))
-            //     return boolValue;
-            //
-            // switch (s)
-            // {
-            //     case "1":
-            //         return true;
-            //     case "0":
-            //         return false;
-            // }
-            //
-            // if (s.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
-            //     return true;
-            // if (s.Equals("no", StringComparison.InvariantCultureIgnoreCase))
-            //     return false;
-            //
-            // return useDefault;
         }
 
         /// <summary>
