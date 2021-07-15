@@ -176,242 +176,6 @@ namespace TetraPak
         /// <inheritdoc cref="IEnumerable{T}.GetEnumerator"/>
         public IEnumerator<string> GetEnumerator() => new ArrayEnumerator<string>(Items);
 
-        /// <summary>
-        ///   Creates a new <see cref="MultiStringValue"/> from this one, but without one or more leading element(s).
-        /// </summary>
-        /// <param name="count">
-        ///   (optional; default=1)<br/>
-        ///   Specifies how many items to pop from the <see cref="MultiStringValue"/>.
-        /// </param>
-        /// <param name="safe">
-        ///   (optional; default=<c>false</c>)<br/>
-        ///   When set an invalid <paramref name="count"/> (too high) an <see cref="Empty"/> value is returned;
-        ///   otherwise a <see cref="ArgumentOutOfRangeException"/> exception is thrown.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="MultiStringValue"/> with <paramref name="count"/> items removed from the start.
-        /// </returns>
-        public MultiStringValue TrimFirst(int count = 1, bool safe = false)
-        {
-            count = Math.Max(0, count);
-            if (count == 0)
-                return new MultiStringValue(Items);
-                
-            if (count == Items.Length)
-                return Empty;
-                
-            if (count > Items.Length)
-                return safe 
-                    ? Empty
-                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {this}");
-            
-            var items = new string[Items.Length - count];
-            var j = count;
-            // var length = Items.Length - count; obsolete
-            for (var i = 0; i < items.Length; i++, j++)
-            {
-                items[i] = Items[j];
-            }
-
-            return new MultiStringValue(items);
-        }
-
-        /// <summary>
-        ///   Creates a new <see cref="MultiStringValue"/> from this one, but without one or more trailing element(s).
-        /// </summary>
-        /// <param name="count">
-        ///   (optional; default=1)<br/>
-        ///   Specifies how many items to pop from the <see cref="MultiStringValue"/>.
-        /// </param>
-        /// <param name="safe">
-        ///   (optional; default=<c>false</c>)<br/>
-        ///   When set an invalid <paramref name="count"/> (too high) an <see cref="Empty"/> value is returned;
-        ///   otherwise a <see cref="ArgumentOutOfRangeException"/> exception is thrown.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="MultiStringValue"/> with <paramref name="count"/> items removed from the end.
-        /// </returns>
-        public MultiStringValue TrimLast(uint count = 1, bool safe = false)
-        {
-            if (count == 0)
-                return new MultiStringValue(Items);
-                
-            if (count == Items.Length)
-                return Empty;
-                
-            if (count > Items.Length)
-                return safe 
-                    ? Empty
-                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {this}");
-            
-            var items = new string[Items.Length - count];
-            for (var i = 0; i < items.Length; i++)
-            {
-                items[i] = Items[i];
-            }
-
-            return new MultiStringValue(items);
-        }
-        
-        /// <summary>
-        ///   Copies the leading <see cref="Items"/> of this value to create a new <see cref="MultiStringValue"/>.
-        /// </summary>
-        /// <param name="count">
-        ///   (optional; default=1)<br/>
-        ///   The number of elements to be copied.
-        /// </param>
-        /// <param name="safe">
-        ///   (optional; default=<c>false</c>)<bt/>
-        ///   When set an invalid <paramref name="count"/> value will return an <see cref="Empty"/> value;
-        ///   otherwise an <see cref="ArgumentOutOfRangeException"/> will be thrown.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="MultiStringValue"/> from the first leading items of this one.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   The <paramref name="count"/> value implied more <see cref="Items"/> than was supported by this value,
-        ///   and <paramref name="safe"/> was not set.  
-        /// </exception>
-        public MultiStringValue CopyFirst(int count = 1, bool safe = false)
-        {
-            count = Math.Max(0, count);
-            if (count == Items.Length)
-                return new MultiStringValue(Items);
-            
-            if (count < 1)
-                return safe
-                    ? Empty
-                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot extract last {count} items from end of {this}");
-            
-            if (count > Items.Length)
-                return safe 
-                    ? new MultiStringValue(Items)
-                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {this}");
-
-            if (count == 1)
-                return new MultiStringValue(Items[0]);
-
-            var items = new string[count];
-            for (var i = 0; i < count; i++)
-            {
-                items[i] = Items[i];
-            }
-
-            return new MultiStringValue(items);
-        }
-
-        /// <summary>
-        ///   Copies the trailing <see cref="Items"/> of this value to create a new <see cref="MultiStringValue"/>.
-        /// </summary>
-        /// <param name="count">
-        ///   (optional; default=1)<br/>
-        ///   The number of elements to be copied.
-        /// </param>
-        /// <param name="safe">
-        ///   (optional; default=<c>false</c>)<bt/>
-        ///   When set an invalid <paramref name="count"/> value will return an <see cref="Empty"/> value;
-        ///   otherwise an <see cref="ArgumentOutOfRangeException"/> will be thrown.
-        /// </param>
-        /// <returns>
-        ///   A <see cref="MultiStringValue"/> from the trailing items of this one.
-        /// </returns>
-        /// <exception cref="ArgumentOutOfRangeException">
-        ///   The <paramref name="count"/> value implied more <see cref="Items"/> than was supported by this value,
-        ///   and <paramref name="safe"/> was not set.  
-        /// </exception>
-        public MultiStringValue CopyLast(uint count = 1, bool safe = false)
-        {
-            if (count == Items.Length)
-                return new MultiStringValue(Items);
-            
-            if (count < 1)
-                return safe
-                    ? Empty
-                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot extract last {count} items from end of {this}");
-            
-            if (count > Items.Length)
-                return safe 
-                    ? new MultiStringValue(Items)
-                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {this}");
-
-            if (count == 1)
-                return new MultiStringValue(Items[^1]);
-
-            var items = new string[count];
-            var j = 0;
-            for (var i = Count-count; i < Count; i++, j++)
-            {
-                items[j] = Items[i];
-            }
-
-            return new MultiStringValue(items);
-        }
-
-        /// <summary>
-        ///   Determines whether the leading <see cref="Items"/> matches another <see cref="MultiStringValue"/>. 
-        /// </summary>
-        /// <param name="pattern">
-        ///   A <see cref="MultiStringValue"/> to compare with.
-        /// </param>
-        /// <param name="stringComparison">
-        ///   (optional; default=<see cref="StringComparison.Ordinal"/>)<br/>
-        ///   One of the enumeration values that specifies how the strings will be compared.
-        /// </param>
-        /// <returns>
-        ///   <c>true</c> if the leading <see cref="Items"/> of this value matches all
-        ///   items of the <paramref name="pattern"/>.
-        /// </returns>
-        /// <seealso cref="EndsWith"/>
-        public bool StartsWith(MultiStringValue pattern, StringComparison stringComparison = StringComparison.Ordinal)
-        {
-            if (IsEmpty)
-                return pattern.IsEmpty;
-
-            if (pattern.Count > Count)
-                return false;
-
-            for (var i = 0; i < pattern.Count; i++)
-            {
-                if (!Items[i].Equals(pattern.Items[i], stringComparison))
-                    return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        ///   Determines whether the trailing <see cref="Items"/> matches another <see cref="MultiStringValue"/>. 
-        /// </summary>
-        /// <param name="pattern">
-        ///   A <see cref="MultiStringValue"/> to compare with.
-        /// </param>
-        /// <param name="stringComparison">
-        ///   (optional; default=<see cref="StringComparison.Ordinal"/>)<br/>
-        ///   One of the enumeration values that specifies how the strings will be compared.
-        /// </param>
-        /// <returns>
-        ///   <c>true</c> if the trailing <see cref="Items"/> of this value matches all
-        ///   items of the <paramref name="pattern"/>.
-        /// </returns>
-        /// <seealso cref="StartsWith"/>
-        public bool EndsWith(MultiStringValue pattern, StringComparison stringComparison = StringComparison.Ordinal)
-        {
-            if (IsEmpty)
-                return pattern.IsEmpty;
-
-            if (pattern.Count > Count)
-                return false;
-
-            var j = Count - pattern.Count;
-            for (var i = 0; i < pattern.Count; i++, j++)
-            {
-                if (!Items[j].Equals(pattern.Items[i], stringComparison))
-                    return false;
-            }
-
-            return true;
-        }
-
         #region .  Equality  .
 
         /// <summary>
@@ -443,7 +207,7 @@ namespace TetraPak
                 var match = false;
                 for (var j = 0; j < length && !match; j++)
                 {
-                    match = test.Equals(other.Items[j]);
+                    match = test.Equals(other.Items[j], comparison);
                 }
 
                 if (!match)
@@ -597,8 +361,6 @@ namespace TetraPak
 
     public static class MultiStringValueHelper
     {
-        // public static bool IsEmpty(this MultiStringValue self) => !self?.Items.Any() ?? true; obsolete
-
         public static MultiStringValue Join(this MultiStringValue self, MultiStringValue other, bool trimDuplicates)
         {
             var list = new List<string>(self.Items);
@@ -623,5 +385,259 @@ namespace TetraPak
             return !other.IsEmpty && other.Items.Any(item => self.Items.Any(i => i == item));
         }
 
+        /// <summary>
+        ///   Creates a new <see cref="MultiStringValue"/> from this one, but without one or more leading element(s).
+        /// </summary>
+        /// <param name="self">
+        ///   The extended <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="count">
+        ///   (optional; default=1)<br/>
+        ///   Specifies how many items to pop from the <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="safe">
+        ///   (optional; default=<c>false</c>)<br/>
+        ///   When set an invalid <paramref name="count"/> (too high) an <see cref="MultiStringValue.Empty"/> value is returned;
+        ///   otherwise a <see cref="ArgumentOutOfRangeException"/> exception is thrown.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="MultiStringValue"/> with <paramref name="count"/> items removed from the start.
+        /// </returns>
+        public static MultiStringValue TrimFirst(this MultiStringValue self, int count = 1, bool safe = false)
+        {
+            count = Math.Max(0, count);
+            if (count == 0)
+                return new MultiStringValue(self.Items);
+                
+            if (count == self.Items.Length)
+                return MultiStringValue.Empty;
+                
+            if (count > self.Items.Length)
+                return safe 
+                    ? MultiStringValue.Empty
+                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {self}");
+            
+            var items = new string[self.Items.Length - count];
+            var j = count;
+            for (var i = 0; i < items.Length; i++, j++)
+            {
+                items[i] = self.Items[j];
+            }
+
+            return new MultiStringValue(items);
+        }
+
+        /// <summary>
+        ///   Creates a new <see cref="MultiStringValue"/> from this one, but without one or more trailing element(s).
+        /// </summary>
+        /// <param name="self">
+        ///   The extended <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="count">
+        ///   (optional; default=1)<br/>
+        ///   Specifies how many items to pop from the <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="safe">
+        ///   (optional; default=<c>false</c>)<br/>
+        ///   When set an invalid <paramref name="count"/> (too high) an <see cref="MultiStringValue.Empty"/> value is returned;
+        ///   otherwise a <see cref="ArgumentOutOfRangeException"/> exception is thrown.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="MultiStringValue"/> with <paramref name="count"/> items removed from the end.
+        /// </returns>
+        public static MultiStringValue TrimLast(this MultiStringValue self, uint count = 1, bool safe = false)
+        {
+            if (count == 0)
+                return new MultiStringValue(self.Items);
+                
+            if (count == self.Items.Length)
+                return MultiStringValue.Empty;
+                
+            if (count > self.Items.Length)
+                return safe 
+                    ? MultiStringValue.Empty
+                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {self}");
+            
+            var items = new string[self.Items.Length - count];
+            for (var i = 0; i < items.Length; i++)
+            {
+                items[i] = self.Items[i];
+            }
+
+            return new MultiStringValue(items);
+        }
+        
+        /// <summary>
+        ///   Copies the leading <see cref="MultiStringValue.Items"/> of this value to create a new <see cref="MultiStringValue"/>.
+        /// </summary>
+        /// <param name="self">
+        ///   The extended <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="count">
+        ///   (optional; default=1)<br/>
+        ///   The number of elements to be copied.
+        /// </param>
+        /// <param name="safe">
+        ///   (optional; default=<c>false</c>)<bt/>
+        ///   When set an invalid <paramref name="count"/> value will return an <see cref="MultiStringValue.Empty"/> value;
+        ///   otherwise an <see cref="ArgumentOutOfRangeException"/> will be thrown.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="MultiStringValue"/> from the first leading items of this one.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   The <paramref name="count"/> value implied more <see cref="MultiStringValue.Items"/> than was supported by this value,
+        ///   and <paramref name="safe"/> was not set.  
+        /// </exception>
+        public static MultiStringValue CopyFirst(this MultiStringValue self, int count = 1, bool safe = false)
+        {
+            count = Math.Max(0, count);
+            if (count == self.Items.Length)
+                return new MultiStringValue(self.Items);
+            
+            if (count < 1)
+                return safe
+                    ? MultiStringValue.Empty
+                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot extract last {count} items from end of {self}");
+            
+            if (count > self.Items.Length)
+                return safe 
+                    ? new MultiStringValue(self.Items)
+                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {self}");
+
+            if (count == 1)
+                return new MultiStringValue(self.Items[0]);
+
+            var items = new string[count];
+            for (var i = 0; i < count; i++)
+            {
+                items[i] = self.Items[i];
+            }
+
+            return new MultiStringValue(items);
+        }
+
+        /// <summary>
+        ///   Copies the trailing <see cref="MultiStringValue.Items"/> of this value to create a new <see cref="MultiStringValue"/>.
+        /// </summary>
+        /// <param name="self">
+        ///   The extended <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="count">
+        ///   (optional; default=1)<br/>
+        ///   The number of elements to be copied.
+        /// </param>
+        /// <param name="safe">
+        ///   (optional; default=<c>false</c>)<bt/>
+        ///   When set an invalid <paramref name="count"/> value will return an <see cref="MultiStringValue.Empty"/> value;
+        ///   otherwise an <see cref="ArgumentOutOfRangeException"/> will be thrown.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="MultiStringValue"/> from the trailing items of this one.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        ///   The <paramref name="count"/> value implied more <see cref="MultiStringValue.Items"/> than was supported by this value,
+        ///   and <paramref name="safe"/> was not set.  
+        /// </exception>
+        public static MultiStringValue CopyLast(this MultiStringValue self, uint count = 1, bool safe = false)
+        {
+            if (count == self.Items.Length)
+                return new MultiStringValue(self.Items);
+            
+            if (count < 1)
+                return safe
+                    ? MultiStringValue.Empty 
+                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot extract last {count} items from end of {self}");
+            
+            if (count > self.Items.Length)
+                return safe 
+                    ? new MultiStringValue(self.Items)
+                    : throw new ArgumentOutOfRangeException(nameof(count), $"Cannot pop {count} items from end of {self}");
+
+            if (count == 1)
+                return new MultiStringValue(self.Items[^1]);
+
+            var items = new string[count];
+            var j = 0;
+            for (var i = self.Count-count; i < self.Count; i++, j++)
+            {
+                items[j] = self.Items[i];
+            }
+
+            return new MultiStringValue(items);
+        }
+
+        /// <summary>
+        ///   Determines whether the leading <see cref="MultiStringValue.Items"/>
+        ///   matches another <see cref="MultiStringValue"/>. 
+        /// </summary>
+        /// <param name="self">
+        ///   The extended <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="pattern">
+        ///   A <see cref="MultiStringValue"/> to compare with.
+        /// </param>
+        /// <param name="stringComparison">
+        ///   (optional; default=<see cref="StringComparison.Ordinal"/>)<br/>
+        ///   One of the enumeration values that specifies how the strings will be compared.
+        /// </param>
+        /// <returns>
+        ///   <c>true</c> if the leading <see cref="MultiStringValue.Items"/> of this value matches all
+        ///   items of the <paramref name="pattern"/>.
+        /// </returns>
+        /// <seealso cref="EndsWith"/>
+        public static bool StartsWith(this MultiStringValue self, MultiStringValue pattern, StringComparison stringComparison = StringComparison.Ordinal)
+        {
+            if (self.IsEmpty)
+                return pattern.IsEmpty;
+
+            if (pattern.Count > self.Count)
+                return false;
+
+            for (var i = 0; i < pattern.Count; i++)
+            {
+                if (!self.Items[i].Equals(pattern.Items[i], stringComparison))
+                    return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        ///   Determines whether the trailing <see cref="MultiStringValue.Items"/> matches
+        ///   another <see cref="MultiStringValue"/>. 
+        /// </summary>
+        /// <param name="self">
+        ///   The extended <see cref="MultiStringValue"/>.
+        /// </param>
+        /// <param name="pattern">
+        ///   A <see cref="MultiStringValue"/> to compare with.
+        /// </param>
+        /// <param name="stringComparison">
+        ///   (optional; default=<see cref="StringComparison.Ordinal"/>)<br/>
+        ///   One of the enumeration values that specifies how the strings will be compared.
+        /// </param>
+        /// <returns>
+        ///   <c>true</c> if the trailing <see cref="MultiStringValue.Items"/> of this value matches all
+        ///   items of the <paramref name="pattern"/>.
+        /// </returns>
+        /// <seealso cref="StartsWith"/>
+        public static bool EndsWith(this MultiStringValue self, MultiStringValue pattern, StringComparison stringComparison = StringComparison.Ordinal)
+        {
+            if (self.IsEmpty)
+                return pattern.IsEmpty;
+
+            if (pattern.Count > self.Count)
+                return false;
+
+            var j = self.Count - pattern.Count;
+            for (var i = 0; i < pattern.Count; i++, j++)
+            {
+                if (!self.Items[j].Equals(pattern.Items[i], stringComparison))
+                    return false;
+            }
+
+            return true;
+        }
     }
 }

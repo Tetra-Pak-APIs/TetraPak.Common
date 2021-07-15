@@ -269,11 +269,6 @@ namespace TetraPak.Caching
 
         internal static string MakeKey(string repository, string key) => $"{repository}://{key}";
 
-        // internal ITimeLimitedRepositoryOptions GetRepositoryOptions(string repository) obsolete
-        // {
-        //     return _config?.GetRepositoryOptions(repository) ?? SimpleTimeLimitedRepositoryConfig.AsDefault(this);
-        // }
-
         public SimpleCache WithConfiguration(SimpleCacheConfig config)
         {
             _config = config;

@@ -155,18 +155,9 @@ namespace TetraPak.Configuration
                 SectionIdentifier = value;
                 ConfigPath = ParentConfiguration is IConfigurationSection section
                     ? $"{section.Path}:{value}"
-                    : value; // nisse
+                    : value; 
                 
             }
-            // if (ParentConfiguration is null) obsolete
-            // {
-            //     ConfigPath = value;
-            //     return;
-            // }
-            //
-            // ConfigPath = ParentConfiguration is IConfigurationSection section
-            //     ? $"{section.Path}:{value}"
-            //     : value; // nisse
         }
         
         protected void SetSection(IConfiguration value)
@@ -198,22 +189,11 @@ namespace TetraPak.Configuration
         {
             ParentConfiguration = configuration;
             setSectionIdentifier(sectionIdentifier);
-            try
-            {
-                var sectionKey = getSectionKey(sectionIdentifier, configuration);
-                Section = configuration?.GetSection(sectionKey);
-
-                var nisse = Section?.ToStringValues();
-                
-                IsEmpty = Section?.IsEmpty() ?? true; 
-                Logger = logger;
-                ConfigPath = sectionIdentifier;
-            }
-            catch (Exception ex) // nisse
-            {
-                Console.WriteLine(ex);
-                throw;
-            }
+            var sectionKey = getSectionKey(sectionIdentifier, configuration);
+            Section = configuration?.GetSection(sectionKey);
+            IsEmpty = Section?.IsEmpty() ?? true; 
+            Logger = logger;
+            ConfigPath = sectionIdentifier;
         }
     }
 }
