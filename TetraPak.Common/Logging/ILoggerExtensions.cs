@@ -133,7 +133,7 @@ namespace TetraPak.Logging
         {
             return string.IsNullOrEmpty(messageId) 
                 ? $"{Prefix}{message}"
-                : $"{Prefix} [#{messageId}] {message}";
+                : $"{Prefix} [{messageId}] {message}";
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace TetraPak.Logging
         {
             return string.IsNullOrEmpty(messageId)
                 ? $"{Prefix}{message ?? exception.Message}"
-                : $"{Prefix} [#{messageId}] {message ?? exception.Message}";
+                : $"{Prefix} [{messageId}] {message ?? exception.Message}";
         }
 
         /// <summary>

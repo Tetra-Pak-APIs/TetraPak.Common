@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 
 namespace TetraPak.Caching
 {
+    /// <summary>
+    ///   Implementors of this contract can act as a repository for arbitrary values
+    ///   with a for a limited time, which can be useful for caching purposes.
+    /// </summary>
     public interface ITimeLimitedRepositories
     {
         /// <summary>
@@ -25,7 +29,16 @@ namespace TetraPak.Caching
         /// </summary>
         /// <seealso cref="DefaultLifeSpan"/>
         /// <seealso cref="DefaultExtendedLifeSpan"/>
+        /// <seealso cref="DefaultAdjustedLifeSpan"/>
         TimeSpan DefaultMaxLifeSpan { get; }
+        
+        /// <summary>
+        ///   Gets a default adjusted lifespan for repository values.
+        /// </summary>
+        /// <seealso cref="DefaultLifeSpan"/>
+        /// <seealso cref="DefaultExtendedLifeSpan"/>
+        /// <seealso cref="DefaultMaxLifeSpan"/>
+        TimeSpan DefaultAdjustedLifeSpan { get; }
         
         /// <summary>
         ///   Gets or sets a value specifying whether value types should be validated when updated.
@@ -67,6 +80,18 @@ namespace TetraPak.Caching
         ///   A <see cref="TimeSpan"/> value.
         /// </returns>
         TimeSpan GetExtendedLifeSpan(string repository);
+
+        /// <summary>
+        ///   Gets the reduced lifespan configured for a specified repository.
+        ///   The reduced lifespan is applied every time a cached entity is read or updated.  
+        /// </summary>
+        /// <param name="repository">
+        ///   Identifies the repository.    
+        /// </param>
+        /// <returns>
+        ///   A <see cref="TimeSpan"/> value.
+        /// </returns>
+        TimeSpan GetAdjustedLifeSpan(string repository);
 
         /// <summary>
         ///   Looks up a value in a repository.
@@ -169,11 +194,25 @@ namespace TetraPak.Caching
         ///   Creates or configures a time limited repository.
         /// </summary>
         /// <param name="repository">
-        ///   Identifies the repository to remove the value from.
+        ///   Identifies the repository to be configured.
         /// </param>
         /// <param name="options">
         ///   Specifies the repository configuration.
         /// </param>
         public Task ConfigureAsync(string repository, ITimeLimitedRepositoryOptions options);
-    }
+
+        /// <summary>
+        ///   Obtains the configuration for a specified repository.
+        /// </summary>
+        /// <param name="repository">
+        ///   Identifies the repository.
+        /// </param>
+        /// <param name="useDefault">
+        ///   Specifies whether to return default options when none could be found.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="ITimeLimitedRepositoryOptions"/> instance.
+        /// </returns>
+        Task<ITimeLimitedRepositoryOptions> GetRepositoryOptionsAsync(string repository, bool useDefault = true);
+    }   
 }

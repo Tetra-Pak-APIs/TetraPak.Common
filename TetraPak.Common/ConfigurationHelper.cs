@@ -217,9 +217,9 @@ namespace TetraPak
         /// </remarks>
         public static bool TryParseConfiguredTimeSpan(this string stringValue, out TimeSpan value) 
         {
-            if (int.TryParse(stringValue, out var seconds))
+            if (int.TryParse(stringValue, out var milliseconds))
             {
-                value = TimeSpan.FromSeconds(seconds);
+                value = TimeSpan.FromMilliseconds(milliseconds);
                 return true;
             }
 

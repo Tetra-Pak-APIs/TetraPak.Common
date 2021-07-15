@@ -34,7 +34,7 @@ namespace TetraPak.Caching
             var childSections = Section.GetChildren();
             foreach (var childSection in childSections)
             {
-                var config = new SimpleTimeLimitedRepositoryConfig(_simpleCache, Section, Logger, childSection.Key);
+                var config = new SimpleTimeLimitedRepositoryOptions(_simpleCache, Section, Logger, childSection.Key);
                 _repositoryConfigs.Add(childSection.Key, config);
             }
         }
@@ -46,7 +46,16 @@ namespace TetraPak.Caching
                 : null;
         }
 
-        public void Configure(string repository, ITimeLimitedRepositoryOptions options) => _repositoryConfigs[repository] = options;
+        public void Configure(string repository, ITimeLimitedRepositoryOptions options)
+        {
+            if (_repositoryConfigs.TryGetValue(repository, out var existing))
+            {
+                ((SimpleTimeLimitedRepositoryOptions) existing).MergeFrom(options);
+                return;
+            }
+
+            _repositoryConfigs.Add(repository, options);
+        }
 
         public SimpleCacheConfig(
             SimpleCache simpleCache,
@@ -65,7 +74,7 @@ namespace TetraPak.Caching
             _simpleCache = cache;
             foreach (var options in _repositoryConfigs.Values)
             {
-                ((SimpleTimeLimitedRepositoryConfig) options).WithCache(cache);
+                ((SimpleTimeLimitedRepositoryOptions) options).SetCache(cache);
             }
             return this;
         }

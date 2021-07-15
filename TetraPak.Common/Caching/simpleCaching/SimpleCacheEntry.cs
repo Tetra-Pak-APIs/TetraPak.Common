@@ -22,18 +22,10 @@ namespace TetraPak.Caching
         
         public string Key { get; }
         
-        public bool IsLive
+        public bool IsLive(out TimeSpan remainingLifeSpan)
         {
-            get
-            {
-                var remaining = GetRemainingLifeSpan();
-                return remaining != TimeSpan.Zero;
-                // var now = DateTime.UtcNow; obsolete
-                // var maxLifeSpan = getMaxLifeSpan(); 
-                // return maxLifeSpan == TimeSpan.Zero
-                //     ? DateTime.UtcNow < SpawnTimeUtc.Add(getLifeSpan())
-                //     : now < InitialSpawnTimeUtc.Add(maxLifeSpan) && now < SpawnTimeUtc.Add(getLifeSpan());
-            }
+            remainingLifeSpan = GetRemainingLifeSpan();
+            return remainingLifeSpan != TimeSpan.Zero;
         }
 
         public TimeSpan GetRemainingLifeSpan(DateTime? from = null)
@@ -49,6 +41,12 @@ namespace TetraPak.Caching
             {
                 lifeSpan = maxLifeSpan;
             }
+
+            var adjustedLifeSpan = getAdjustedLifeSpan();
+            if (adjustedLifeSpan != TimeSpan.Zero)
+            {
+                lifeSpan = lifeSpan.Add(adjustedLifeSpan);
+            }
             var expires = spawnTime.Add(lifeSpan);
             return from < expires 
                 ? expires.Subtract(from.Value) 
@@ -61,11 +59,13 @@ namespace TetraPak.Caching
 
         TimeSpan getMaxLifeSpan() => _customMaxLifeSpan ?? _repositories.GetMaxLifeSpan(Repository);
 
-        TimeSpan getExtendedLifeSpan() => _repositories.GetExtendedLifeSpan(Repository); 
+        TimeSpan getExtendedLifeSpan() => _repositories.GetExtendedLifeSpan(Repository);
 
-        public Outcome<T> GetValue<T>()
+        TimeSpan getAdjustedLifeSpan() => _repositories.GetAdjustedLifeSpan(Repository);
+
+        public Outcome<T> GetValue<T>(bool checkIsLive = true)
         {
-            if (!IsLive)
+            if (checkIsLive && !IsLive(out _))
                 return Outcome<T>.Fail(new Exception("Value has expired"));
 
             var outcome = _value is T tValue

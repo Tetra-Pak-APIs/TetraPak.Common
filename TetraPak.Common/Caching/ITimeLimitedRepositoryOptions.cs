@@ -21,5 +21,12 @@ namespace TetraPak.Caching
         ///   when reading/updating values (see <see cref="ExtendedLifeSpan"/>).
         /// </summary>
         TimeSpan MaxLifeSpan { get; }
+        
+        /// <summary>
+        ///   Gets a value that reduces the <see cref="LifeSpan"/> (and <see cref="ExtendedLifeSpan"/> when applicable).
+        ///   Use this value to create a "safe zone" for values that have themselves a limited lifetime
+        ///   (outside of the repository, such as access tokens), and that might expire within this time span. 
+        /// </summary>
+        TimeSpan AdjustedLifeSpan { get; }
     }
 }

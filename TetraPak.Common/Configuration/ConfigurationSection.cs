@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
@@ -10,6 +11,7 @@ namespace TetraPak.Configuration
     /// <summary>
     ///   Provides access to the configuration framework through a POCO class. 
     /// </summary>
+    [DebuggerDisplay("{" + nameof(ConfigPath) + "}")]
     public abstract class ConfigurationSection
     {
         /// <summary>
@@ -33,25 +35,64 @@ namespace TetraPak.Configuration
         /// <summary>
         ///   Gets the encapsulated <see cref="IConfigurationSection"/>.  
         /// </summary>
-        public IConfigurationSection Section { get; }
+        public IConfigurationSection Section { get; private set; }
 
         /// <summary>
         ///   Gets the parent <see cref="IConfiguration"/> section
         ///   (or <c>null</c> if this section is also the configuration root).
         /// </summary>
-        public IConfiguration ParentSection { get; }
+        public IConfiguration ParentConfiguration { get; }
         
         /// <summary>
         ///   Gets a logger.
         /// </summary>
-        public ILogger Logger { get; } 
+        public ILogger Logger { get; }
 
-        string getSectionIdentifier() => SectionIdentifier;
+        public ConfigPath ConfigPath { get; protected set; }
+        
+        string getSectionKey(ConfigPath sectionIdentifier, IConfiguration configuration)
+        {
+            if (sectionIdentifier.IsEmpty)
+            {
+                sectionIdentifier = SectionIdentifier;
+            }
+            if (sectionIdentifier.Count == 1)
+                return sectionIdentifier;
+
+            if (configuration is not IConfigurationSection section) 
+                return sectionIdentifier;
+            
+            var sectionPath = (ConfigPath) section.Path;
+            return sectionIdentifier.StartsWith(sectionPath) 
+                ? sectionIdentifier.TrimFirst(sectionPath.Count) 
+                : sectionIdentifier;
+        }
 
         protected virtual FieldInfo OnGetField(string fieldName)
         {
             return GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
         }
+
+        internal bool TryGetFieldValue<T>(string propertyName, out T value)
+        {
+            value = default;
+            var fieldName = $"_{propertyName.ToLowerInitial()}";
+            var field = OnGetField(fieldName);
+            var o = field?.GetValue(this);
+            if (o is not T tValue)
+                return false;
+
+            value = tValue;
+            return true;
+        }
+
+        internal void SetFieldValue(string propertyName, object value)
+        {
+            var fieldName = $"_{propertyName.ToLowerInitial()}";
+            var field = OnGetField(fieldName);
+            field?.SetValue(this, value);
+        }
+
         
         /// <summary>
         ///   Reads a value from field-behind (name convention based on property). If the field is null
@@ -63,7 +104,7 @@ namespace TetraPak.Configuration
             ValueParser<T> parser = null, 
             [CallerMemberName] string propertyName = null)
         {
-            if (tryGetFieldValue(out var fieldValue))
+            if (TryGetFieldValue<T>(propertyName, out var fieldValue))
                 return fieldValue;
 
             if (parser is null)
@@ -99,25 +140,43 @@ namespace TetraPak.Configuration
 
             var stringValue = Section[propertyName];
             return parser(stringValue, out var sectionValue) ? sectionValue : useDefault;
-            
-            bool tryGetFieldValue(out T value)
-            {
-                value = default;
-                var fieldName = $"_{propertyName.ToLowerInitial()}";
-                var field = OnGetField(fieldName);
-                var o = field?.GetValue(this);
-                if (o is not T tValue)
-                    return false;
-
-                value = tValue;
-                return true;
-            }
         }
 
         void setSectionIdentifier(string value)
         {
-            SectionIdentifier = value;
+            if (value?.Contains(ConfigPath.Separator) ?? false)
+            {
+                var configPath = (ConfigPath) value;
+                SectionIdentifier = configPath.CopyLast();
+                ConfigPath = value;
+            }
+            else
+            {
+                SectionIdentifier = value;
+                ConfigPath = ParentConfiguration is IConfigurationSection section
+                    ? $"{section.Path}:{value}"
+                    : value; // nisse
+                
+            }
+            // if (ParentConfiguration is null) obsolete
+            // {
+            //     ConfigPath = value;
+            //     return;
+            // }
+            //
+            // ConfigPath = ParentConfiguration is IConfigurationSection section
+            //     ? $"{section.Path}:{value}"
+            //     : value; // nisse
         }
+        
+        protected void SetSection(IConfiguration value)
+        {
+            if (value is not IConfigurationSection section)
+                throw new ArgumentException("Value is not a configuration section", nameof(value));
+            
+            Section = section;
+        }
+
 
         /// <summary>
         ///   Instantiates a <see cref="ConfigurationSection"/>.
@@ -135,13 +194,26 @@ namespace TetraPak.Configuration
         public ConfigurationSection(
             IConfiguration configuration, 
             ILogger logger,
-            string sectionIdentifier = null)
+            ConfigPath sectionIdentifier = null)
         {
-            ParentSection = configuration;
+            ParentConfiguration = configuration;
             setSectionIdentifier(sectionIdentifier);
-            Section = configuration?.GetSection(sectionIdentifier ?? getSectionIdentifier());
-            IsEmpty = Section?.IsEmpty() ?? true; 
-            Logger = logger;
+            try
+            {
+                var sectionKey = getSectionKey(sectionIdentifier, configuration);
+                Section = configuration?.GetSection(sectionKey);
+
+                var nisse = Section?.ToStringValues();
+                
+                IsEmpty = Section?.IsEmpty() ?? true; 
+                Logger = logger;
+                ConfigPath = sectionIdentifier;
+            }
+            catch (Exception ex) // nisse
+            {
+                Console.WriteLine(ex);
+                throw;
+            }
         }
     }
 }

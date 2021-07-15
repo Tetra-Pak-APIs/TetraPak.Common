@@ -32,6 +32,11 @@ namespace TetraPak.Caching
         /// <inheritdoc />
         public TimeSpan DefaultMaxLifeSpan { get; set; } = TimeSpan.Zero;
         
+        /// <inheritdoc />
+        public TimeSpan DefaultAdjustedLifeSpan { get; set; } = TimeSpan.Zero;
+
+        ITimeLimitedRepositoryOptions DefaultOptions => SimpleTimeLimitedRepositoryOptions.AsDefault(this);
+        
         /// <summary>
         ///   Gets or sets an interval between automatic purging processes.
         /// </summary>
@@ -58,7 +63,7 @@ namespace TetraPak.Caching
                     return Task.CompletedTask;
                 }
 
-                if (entry.IsLive)
+                if (entry.IsLive())
                     throw new IdentityConflictException(nameof(key),
                         $"Cannot add new cached value '{value}'. Value is already cached");
 
@@ -96,7 +101,7 @@ namespace TetraPak.Caching
                     return Task.CompletedTask;
                 }
 
-                if (!entry.IsLive)
+                if (!entry.IsLive())
                 {
                     Logger.Trace($"Updating dead cached value '{valueKey}'. Removing and re-adding it");
                     _values.Remove(valueKey);
@@ -127,6 +132,12 @@ namespace TetraPak.Caching
         }
 
         /// <inheritdoc />
+        public TimeSpan GetAdjustedLifeSpan(string repository)
+        {
+            return _config.GetRepositoryOptions(repository)?.AdjustedLifeSpan ?? DefaultAdjustedLifeSpan;
+        }
+
+        /// <inheritdoc />
         public virtual Task<Outcome<T>> GetAsync<T>(string repository, string key) => GetAsync<T>(repository, key, out _);
 
         /// <inheritdoc />
@@ -135,15 +146,12 @@ namespace TetraPak.Caching
             lock (_values)
             {
                 var valueKey = MakeKey(repository, key);
-                if (!_values.TryGetValue(valueKey, out var entry) || !entry.IsLive)
-                {
-                    remainingLifeSpan = TimeSpan.Zero;
-                    return Task.FromResult(Outcome<T>.Fail(
-                        new ArgumentOutOfRangeException(nameof(valueKey), $"Unknown value: {valueKey}")));
-                }
-
-                remainingLifeSpan = entry.GetRemainingLifeSpan();
-                return Task.FromResult(entry.GetValue<T>());
+                if (_values.TryGetValue(valueKey, out var entry) && entry.IsLive(out remainingLifeSpan))
+                    return Task.FromResult(entry.GetValue<T>(false));
+                
+                remainingLifeSpan = TimeSpan.Zero;
+                return Task.FromResult(Outcome<T>.Fail(
+                    new ArgumentOutOfRangeException(nameof(valueKey), $"Unknown value: {valueKey}")));
             }
         }
         
@@ -156,12 +164,21 @@ namespace TetraPak.Caching
         /// <inheritdoc />
         public virtual Task ConfigureAsync(string repository, ITimeLimitedRepositoryOptions options)
         {
-            if (options is SimpleTimeLimitedRepositoryConfig config)
+            if (options is SimpleTimeLimitedRepositoryOptions config)
             {
-                config.WithCache(this);
+                config.SetCache(this);
             }
             _config.Configure(repository, options);
             return Task.CompletedTask;
+        }
+
+        /// <inheritdoc />
+        public Task<ITimeLimitedRepositoryOptions> GetRepositoryOptionsAsync(string repository, bool useDefault = true)
+        {
+            var options = _config.GetRepositoryOptions(repository);
+            return Task.FromResult(options ?? (useDefault
+                ? DefaultOptions
+                : null));
         }
 
         /// <summary>
@@ -247,15 +264,15 @@ namespace TetraPak.Caching
         protected virtual Task<ITimeLimitedRepositoryEntry[]> OnPurgeDeadEntries(
             IEnumerable<ITimeLimitedRepositoryEntry> entries)
         {
-            return Task.FromResult(entries.Where(entry => !entry.IsLive).ToArray());
+            return Task.FromResult(entries.Where(entry => !entry.IsLive()).ToArray());
         }
 
         internal static string MakeKey(string repository, string key) => $"{repository}://{key}";
 
-        internal ITimeLimitedRepositoryOptions GetRepositoryOptions(string repository)
-        {
-            return _config?.GetRepositoryOptions(repository) ?? SimpleTimeLimitedRepositoryConfig.AsDefault(this);
-        }
+        // internal ITimeLimitedRepositoryOptions GetRepositoryOptions(string repository) obsolete
+        // {
+        //     return _config?.GetRepositoryOptions(repository) ?? SimpleTimeLimitedRepositoryConfig.AsDefault(this);
+        // }
 
         public SimpleCache WithConfiguration(SimpleCacheConfig config)
         {

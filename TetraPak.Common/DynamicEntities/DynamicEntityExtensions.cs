@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using TetraPak.Serialization;
 
 namespace TetraPak.DynamicEntities
@@ -152,6 +154,28 @@ namespace TetraPak.DynamicEntities
             var cloned = (DynamicEntity) emptyCtor.Invoke(new object[0]);
             cloneFrom(cloned, entity, false, recursive, path, ignore);
             return cloned;
+        }
+
+        public static Outcome<object> TryParseJsonToDynamicEntity(this string stringValue)
+        {
+            if (string.IsNullOrWhiteSpace(stringValue))
+                return Outcome<object>.Fail(new ArgumentNullException(nameof(stringValue), "The string was empty"));
+
+            try
+            {
+                var json = stringValue.Trim();
+                if (json.StartsWith('[') && json.EndsWith(']'))
+                    return Outcome<object>.Success(JsonSerializer.Deserialize<DynamicEntity[]>(json));
+                
+                if (json.StartsWith('{') && json.EndsWith('}'))
+                    return Outcome<object>.Success(JsonSerializer.Deserialize<DynamicEntity>(json));
+                
+                return Outcome<object>.Fail(new Exception("String value was not JSON"));
+            }
+            catch (Exception ex)
+            {
+                return Outcome<object>.Fail(new Exception("String value was not correctly formed JSON"));
+            }
         }
     }
 }

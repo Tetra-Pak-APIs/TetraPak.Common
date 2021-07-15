@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 
 namespace TetraPak.Configuration
@@ -26,6 +27,46 @@ namespace TetraPak.Configuration
                 throw new ArgumentNullException(nameof(configuration));
 
             return !configuration.GetChildren().Any();
+        }
+        
+        internal static string ToStringValues(this IConfiguration self, bool recursive = false, int indent = 0)
+        {
+            if (self.IsEmpty())
+                return string.Empty;
+
+            var indentation = indent == 0 ? string.Empty : new string(' ', indent);
+            var children = self.GetChildren();
+            var sb = new StringBuilder();
+            foreach (var child in children)
+            {
+                sb.Append(indentation);
+                sb.Append(child.Key);
+                sb.Append(": ");
+                if (child.Value is { })
+                {
+                    sb.AppendLine(child.Value);
+                    continue;
+                }
+
+                if (!child.GetChildren().Any())
+                {
+                    sb.AppendLine("(empty)");
+                    continue;
+                }
+
+                if (!recursive)
+                {
+                    sb.AppendLine("{ ... }");
+                    continue;
+                }
+
+                sb.AppendLine(" {");
+                sb.AppendLine(child.ToStringValues(true, indent + 3));
+                sb.Append(indentation);
+                sb.AppendLine("}");
+            }
+
+            return sb.ToString();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using TetraPak.Serialization;
@@ -22,6 +23,7 @@ namespace TetraPak
     }
     
     [Serializable, JsonConverter(typeof(JsonStringValueSerializer<StringValueBase>))]
+    [DebuggerDisplay("ToString()")]
     public class StringValueBase : IStringValue
     {
         [JsonIgnore]
@@ -53,6 +55,8 @@ namespace TetraPak
             IsError = true;
             return stringValue;
         }
+
+        public override string ToString() => StringValue;
 
         #region .  Equality  .
 

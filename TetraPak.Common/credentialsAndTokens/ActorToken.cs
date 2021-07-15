@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json.Serialization;
 
@@ -74,9 +73,12 @@ namespace TetraPak
         
         bool tryParse(string value, out string identity) => OnTryParse(value, out identity);
 
-        public static implicit operator string(ActorToken token) => token.ToString();
+        public static implicit operator string(ActorToken token) => token?.ToString();
         
-        public static implicit operator ActorToken(string stringValue) => new ActorToken(stringValue);
+        public static implicit operator ActorToken(string stringValue) 
+            => string.IsNullOrWhiteSpace(stringValue)
+                ? null
+                : new ActorToken(stringValue);
 
         /// <summary>
         ///   Returns the token as a <see cref="ToJwtSecurityToken"/> (if applicable).
@@ -94,7 +96,7 @@ namespace TetraPak
                 var handler = new JwtSecurityTokenHandler();
                 return handler.ReadJwtToken(Identity);
             }
-            catch (Exception ex)
+            catch
             {
                 return null;
             }
