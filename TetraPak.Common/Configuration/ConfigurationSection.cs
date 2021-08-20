@@ -12,7 +12,7 @@ namespace TetraPak.Configuration
     ///   Provides access to the configuration framework through a POCO class. 
     /// </summary>
     [DebuggerDisplay("{" + nameof(ConfigPath) + "}")]
-    public abstract class ConfigurationSection
+    public abstract class ConfigurationSection 
     {
         /// <summary>
         ///   Gets a value that indicates whether the configuration section contains no information. 
@@ -52,7 +52,7 @@ namespace TetraPak.Configuration
         
         string getSectionKey(ConfigPath sectionIdentifier, IConfiguration configuration)
         {
-            if (sectionIdentifier.IsEmpty)
+            if (sectionIdentifier?.IsEmpty ?? true)
             {
                 sectionIdentifier = SectionIdentifier;
             }
@@ -194,6 +194,10 @@ namespace TetraPak.Configuration
             IsEmpty = Section?.IsEmpty() ?? true; 
             Logger = logger;
             ConfigPath = sectionIdentifier;
+        }
+
+        protected ConfigurationSection()
+        {
         }
     }
 }

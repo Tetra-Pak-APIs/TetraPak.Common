@@ -285,33 +285,6 @@ namespace TetraPak
         }
         #endregion
         
-        MultiStringValue() : base("")
-        {
-        }
-        
-        /// <summary>
-        ///   Initializes the value.
-        /// </summary>
-        /// <param name="stringValue">
-        ///   The new value's string representation (will automatically be parsed).
-        /// </param>
-        /// <exception cref="FormatException">
-        ///   The <paramref name="stringValue"/> string representation was incorrectly formed.
-        /// </exception>
-        //[DebuggerStepThrough] 
-        public MultiStringValue(string stringValue) : base(stringValue)
-        {
-            if (IsError || string.IsNullOrWhiteSpace(stringValue))
-                return;
-            
-            var parseOutcome = tryParse(stringValue);
-            if (!parseOutcome)
-                throw parseOutcome.Exception;
-
-            Items = parseOutcome.Value;
-            StringValue = stringValue;
-        }
-        
         void validateSupported(IEnumerable<string> items)
         {
             foreach (var item in items)
@@ -347,6 +320,33 @@ namespace TetraPak
 
         void setStringValue() => StringValue = Items.ConcatCollection(OnGetSeparator());
 
+        public MultiStringValue() : base("")
+        {
+        }
+        
+        /// <summary>
+        ///   Initializes the value.
+        /// </summary>
+        /// <param name="stringValue">
+        ///   The new value's string representation (will automatically be parsed).
+        /// </param>
+        /// <exception cref="FormatException">
+        ///   The <paramref name="stringValue"/> string representation was incorrectly formed.
+        /// </exception>
+        //[DebuggerStepThrough] 
+        public MultiStringValue(string stringValue) : base(stringValue)
+        {
+            if (IsError || string.IsNullOrWhiteSpace(stringValue))
+                return;
+            
+            var parseOutcome = tryParse(stringValue);
+            if (!parseOutcome)
+                throw parseOutcome.Exception;
+
+            Items = parseOutcome.Value;
+            StringValue = stringValue;
+        }
+        
         public MultiStringValue(string[] items) : base("")
         {
             if (items.Length == 0)
@@ -356,7 +356,6 @@ namespace TetraPak
             Items = items;
             setStringValue();
         }
-
     }
 
     public static class MultiStringValueHelper

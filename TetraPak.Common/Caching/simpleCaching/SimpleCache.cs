@@ -51,8 +51,10 @@ namespace TetraPak.Caching
         public bool IsTypeStrict { get; set; } = true;
 
         /// <inheritdoc />
-        public Task AddAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null)
+        public Task AddAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null,
+            DateTime? spawnTimeUtc = null)
         {
+            spawnTimeUtc ??= DateTime.UtcNow;
             OnPurgeDeadEntriesAsync();
             lock (_values)
             {
@@ -67,14 +69,16 @@ namespace TetraPak.Caching
                     throw new IdentityConflictException(nameof(key),
                         $"Cannot add new cached value '{value}'. Value is already cached");
 
-                entry.UpdateValue(value, customLifeSpan);
+                entry.UpdateValue(value, spawnTimeUtc.Value, customLifeSpan);
                 return Task.CompletedTask;
             }
         }
 
         /// <inheritdoc />
-        public Task UpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null)
+        public Task UpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null,
+            DateTime? spawnTimeUtc = null)
         {
+            spawnTimeUtc ??= DateTime.UtcNow;
             OnPurgeDeadEntriesAsync();
             lock (_values)
             {
@@ -83,14 +87,16 @@ namespace TetraPak.Caching
                     throw new ArgumentOutOfRangeException(nameof(key),
                         $"Cannot update cached value '{valueKey}'. Value does not exist");
                 
-                entry.UpdateValue(value, customLifeSpan);
+                entry.UpdateValue(value, spawnTimeUtc.Value, customLifeSpan);
                 return Task.CompletedTask;
             }
         }
 
         /// <inheritdoc />
-        public Task AddOrUpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan)
+        public Task AddOrUpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null,
+            DateTime? spawnTimeUtc = null)
         {
+            spawnTimeUtc ??= DateTime.UtcNow;
             OnPurgeDeadEntriesAsync();
             lock (_values)
             {
@@ -108,7 +114,7 @@ namespace TetraPak.Caching
                     _values.Add(valueKey, new SimpleCacheEntry(this, repository, key, value, customLifeSpan));
                     return Task.CompletedTask;
                 }
-                entry.UpdateValue(value, customLifeSpan);
+                entry.UpdateValue(value, spawnTimeUtc.Value, customLifeSpan);
                 return Task.CompletedTask;
             }
         }

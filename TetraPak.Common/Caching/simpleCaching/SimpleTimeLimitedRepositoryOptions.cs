@@ -28,6 +28,13 @@ namespace TetraPak.Caching
         {
             get => GetFromFieldThenSection(_simpleCache.DefaultLifeSpan, (string value, out TimeSpan span) =>
             {
+                // 0 or absent = default
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    span = TimeSpan.Zero;
+                    return false;
+                }
+                
                 if (value.TryParseConfiguredTimeSpan(out span))
                     return true;
                 
@@ -48,9 +55,16 @@ namespace TetraPak.Caching
         {
             get => GetFromFieldThenSection(_simpleCache.DefaultExtendedLifeSpan, (string value, out TimeSpan span) =>
             {
+                // 0 or absent = default
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    span = TimeSpan.Zero;
+                    return false;
+                }
+
+                // '*' == same as (initial) LifeSpan 
                 if (value == "*")
                 {
-                    // extended lifespan is same as initial lifespan ...
                     span = LifeSpan;
                     return true;
                 }
@@ -75,7 +89,12 @@ namespace TetraPak.Caching
         {
             get => GetFromFieldThenSection(_simpleCache.DefaultMaxLifeSpan, (string value, out TimeSpan span) =>
             {
-                // 0 or absent = unlimited
+                // 0 or absent = default
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    span = TimeSpan.Zero;
+                    return false;
+                }
                 if (value.TryParseConfiguredTimeSpan(out span))
                 {
                     span = span == TimeSpan.Zero ? TimeSpan.MaxValue : span;
@@ -113,7 +132,13 @@ namespace TetraPak.Caching
         {
             get => GetFromFieldThenSection(_simpleCache.DefaultAdjustedLifeSpan, (string value, out TimeSpan span) =>
             {
-                // 0 or absent = Zero
+                // 0 or absent = default
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    span = TimeSpan.Zero;
+                    return false;
+                }
+                
                 if (value.TryParseConfiguredTimeSpan(out span))
                 {
                     span = span == TimeSpan.Zero ? TimeSpan.MaxValue : span;
@@ -202,7 +227,7 @@ namespace TetraPak.Caching
             _simpleCache = simpleCache;
         }
 
-        SimpleTimeLimitedRepositoryOptions() : base(null, null)
+        SimpleTimeLimitedRepositoryOptions()
         {
         }
     }

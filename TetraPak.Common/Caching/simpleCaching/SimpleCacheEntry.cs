@@ -84,7 +84,7 @@ namespace TetraPak.Caching
             return outcome;
         }
 
-        public void UpdateValue(object value, TimeSpan? customLifeSpan)
+        public void UpdateValue(object value, DateTime spawnTimeUtc, TimeSpan? customLifeSpan)
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -93,6 +93,12 @@ namespace TetraPak.Caching
                 throw new InvalidCastException();
             
             _value = value;
+            if (spawnTimeUtc.Kind != DateTimeKind.Utc)
+            {
+                spawnTimeUtc = spawnTimeUtc.ToUniversalTime();
+            }
+            SpawnTimeUtc = spawnTimeUtc;
+
             if (customLifeSpan.HasValue)
             {
                 _customLifeSpan = customLifeSpan;

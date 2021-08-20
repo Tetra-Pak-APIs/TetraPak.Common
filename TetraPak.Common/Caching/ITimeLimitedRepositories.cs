@@ -112,69 +112,96 @@ namespace TetraPak.Caching
         Task<Outcome<T>> GetAsync<T>(string repository, string key);
 
         Task<Outcome<T>> GetAsync<T>(string repository, string key, out TimeSpan remainingLifeSpan);
-        
+
         /// <summary>
         ///   Adds a new time limited value.
         /// </summary>
         /// <param name="repository">
-        ///   Identifies the repository where the new value should exist.
+        ///     Identifies the repository where the new value should exist.
         /// </param>
         /// <param name="key">
-        ///   Value's unique identifier.
+        ///     Value's unique identifier.
         /// </param>
         /// <param name="value">
-        ///   The value to be added.
+        ///     The value to be added.
         /// </param>
         /// <param name="customLifeSpan">
-        ///   (optional; default=<see cref="DefaultLifeSpan"/>)<br/>
-        ///   A custom lifespan for the value.
+        ///     (optional; default=<see cref="DefaultLifeSpan"/>)<br/>
+        ///     A custom lifespan for the value.
+        /// </param>
+        /// <param name="spawnTimeUtc">
+        ///     (optional; default=<see cref="DateTime.UtcNow"/>)<br/>
+        ///     Specifies the spawn time for the value.
         /// </param>
         /// <exception cref="IdentityConflictException">
         ///   A value with the same <paramref name="key"/> was already added.
         /// </exception>
-        Task AddAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null);
+        Task AddAsync(
+            string repository, 
+            string key, 
+            object value,
+            TimeSpan? customLifeSpan = null,
+            DateTime? spawnTimeUtc = null);
 
         /// <summary>
         ///   Updates an existing time limited value.
         /// </summary>
         /// <param name="repository">
-        ///   Identifies the repository where the value should exist.
+        ///     Identifies the repository where the value should exist.
         /// </param>
         /// <param name="key">
-        ///   Value's unique identifier.
+        ///     Value's unique identifier.
         /// </param>
         /// <param name="value">
-        ///   The value to be added.
+        ///     The value to be added.
         /// </param>
         /// <param name="customLifeSpan">
-        ///   (optional; default=<see cref="DefaultLifeSpan"/>)<br/>
-        ///   A custom lifespan for the value.
+        ///     (optional; default=<see cref="DefaultLifeSpan"/>)<br/>
+        ///     A custom lifespan for the value.
+        /// </param>
+        /// <param name="spawnTimeUtc">
+        ///     (optional; default=<see cref="DateTime.UtcNow"/>)<br/>
+        ///     Specifies the spawn time for the value.
         /// </param>
         /// <exception cref="ArgumentOutOfRangeException">
         ///   A value could not be identified from the specified <paramref name="key"/>.
         /// </exception>
-        Task UpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null);
+        Task UpdateAsync(
+            string repository, 
+            string key, 
+            object value, 
+            TimeSpan? customLifeSpan = null,
+            DateTime? spawnTimeUtc = null);
 
         /// <summary>
         ///   Adds a new value or updated an existing one.
         /// </summary>
         /// <param name="repository">
-        ///   Identifies the repository where the value should exist.
+        ///     Identifies the repository where the value should exist.
         /// </param>
         /// <param name="key">
-        ///   Value's unique identifier.
+        ///     Value's unique identifier.
         /// </param>
         /// <param name="value">
-        ///   The value to be added or updated.
+        ///     The value to be added or updated.
         /// </param>
         /// <param name="customLifeSpan">
-        ///   (optional; default=<see cref="DefaultLifeSpan"/>)<br/>
-        ///   A custom lifespan for the value.
+        ///     (optional; default=<see cref="DefaultLifeSpan"/>)<br/>
+        ///     A custom lifespan for the value.
+        /// </param>
+        /// <param name="spawnTimeUtc">
+        ///     (optional; default=<see cref="DateTime.UtcNow"/>)<br/>
+        ///     Specifies the spawn time for the value.
         /// </param>
         /// <exception cref="InvalidCastException">
         ///   A value with the same <paramref name="key"/> was already added but its value is incompatible with the new value.
         /// </exception>
-        Task AddOrUpdateAsync(string repository, string key, object value, TimeSpan? customLifeSpan = null);
+        Task AddOrUpdateAsync(
+            string repository, 
+            string key, 
+            object value, 
+            TimeSpan? customLifeSpan = null,
+            DateTime? spawnTimeUtc = null);
 
         /// <summary>
         ///   Removes a time limited value.

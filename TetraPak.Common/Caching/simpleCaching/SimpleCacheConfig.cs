@@ -7,6 +7,9 @@ using TetraPak.Configuration;
 
 namespace TetraPak.Caching
 {
+    /// <summary>
+    ///   A configuration section specifying caching strategies. 
+    /// </summary>
     public class SimpleCacheConfig : ConfigurationSection, IEnumerable<KeyValuePair<string,ITimeLimitedRepositoryOptions>>
     {
         SimpleCache _simpleCache;

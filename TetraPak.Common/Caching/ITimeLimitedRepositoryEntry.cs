@@ -2,10 +2,19 @@
 
 namespace TetraPak.Caching
 {
+    /// <summary>
+    ///   Implementors of this class can represent individual time limited repository entries. 
+    /// </summary>
     public interface ITimeLimitedRepositoryEntry
     {
+        /// <summary>
+        ///   The name of the repository.
+        /// </summary>
         string Repository { get; }
         
+        /// <summary>
+        ///   A key identifying the value to be stored within the time limited repository. 
+        /// </summary>
         string Key { get; }
 
         bool IsLive(out TimeSpan remainingLifeSpan);

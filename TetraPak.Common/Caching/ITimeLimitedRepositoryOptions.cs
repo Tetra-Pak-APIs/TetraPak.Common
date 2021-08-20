@@ -2,6 +2,10 @@
 
 namespace TetraPak.Caching
 {
+    /// <summary>
+    ///   Implementors of this class can represent options for an individual
+    ///   time limited repository.  
+    /// </summary>
     public interface ITimeLimitedRepositoryOptions
     {
         /// <summary>

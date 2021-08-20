@@ -149,18 +149,20 @@ namespace TetraPak
                 return self.Equals(test, comparison);
 
             var options = RegexOptions.None;
-            if (comparison == StringComparison.InvariantCulture ||
-                comparison == StringComparison.InvariantCultureIgnoreCase)
+            switch (comparison)
             {
-                options = RegexOptions.CultureInvariant;
-                if (comparison == StringComparison.InvariantCultureIgnoreCase)
-                    options |= RegexOptions.IgnoreCase;
-            }
-            else if (comparison == StringComparison.CurrentCultureIgnoreCase ||
-                     comparison == StringComparison.InvariantCultureIgnoreCase ||
-                     comparison == StringComparison.OrdinalIgnoreCase)
-            {
-                options = RegexOptions.IgnoreCase;
+                case StringComparison.InvariantCulture or StringComparison.InvariantCultureIgnoreCase:
+                {
+                    options = RegexOptions.CultureInvariant;
+                    if (comparison == StringComparison.InvariantCultureIgnoreCase)
+                        options |= RegexOptions.IgnoreCase;
+                    break;
+                }
+                case StringComparison.CurrentCultureIgnoreCase 
+                    or StringComparison.InvariantCultureIgnoreCase 
+                    or StringComparison.OrdinalIgnoreCase:
+                    options = RegexOptions.IgnoreCase;
+                    break;
             }
 
             var regex = new Regex(regexPattern, options);
