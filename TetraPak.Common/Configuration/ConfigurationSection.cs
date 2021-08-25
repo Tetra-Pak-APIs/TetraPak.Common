@@ -68,6 +68,15 @@ namespace TetraPak.Configuration
                 : sectionIdentifier;
         }
 
+        /// <summary>
+        ///   Obtains a <see cref="FieldInfo"/> object for a specified field.
+        /// </summary>
+        /// <param name="fieldName">
+        ///   Identifies the requested field.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="FieldInfo"/> object.
+        /// </returns>
         protected virtual FieldInfo OnGetField(string fieldName)
         {
             return GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
@@ -92,7 +101,6 @@ namespace TetraPak.Configuration
             var field = OnGetField(fieldName);
             field?.SetValue(this, value);
         }
-
         
         /// <summary>
         ///   Reads a value from field-behind (name convention based on property). If the field is null

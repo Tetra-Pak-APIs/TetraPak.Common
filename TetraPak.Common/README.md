@@ -6,7 +6,7 @@ The TetraPak.Common library is provided ... -- TODO --.
 
 ## Debugging
 
-### State Dump
+### State Dumping
 
--- TODO -- : Explain use cases for `LoggerHelper.GetStateDump` and `StateDumpOptions`  
+-- TODO -- : Explain use cases for `LoggerHelper.GetStateDump`, `StateDumpOptions` and `RestrictedValueAttribute`  
 

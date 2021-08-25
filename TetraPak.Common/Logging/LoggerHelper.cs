@@ -1,6 +1,10 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Logging;
+
+#nullable enable
 
 namespace TetraPak.Logging
 {
@@ -18,6 +22,7 @@ namespace TetraPak.Logging
         /// <returns>
         ///   A JSON formatted string, reflecting the object's current state.
         /// </returns>
+        /// <seealso cref="RestrictedValueAttribute"/>
         public static string GetStateDump(this object obj, StateDumpOptions options)
         {
             const int Indent = 3;
@@ -30,6 +35,13 @@ namespace TetraPak.Logging
                 var objectIndent = new string(' ', indent);
                 var contentIndent = new string(' ', indent + Indent);
                 sb.Append(objectIndent);
+                if (o is StackTrace)
+                {
+                    sb.AppendLine("\"");
+                    sb.AppendLine($"{o}\"");
+                    return;
+                }
+                    
                 sb.AppendLine("{");
                 var propertyInfos = o.GetType().GetProperties().ToArray();
                 var lastSeparatorIndex = -1;
@@ -44,8 +56,13 @@ namespace TetraPak.Logging
                     sb.Append(pi.Name);
                     sb.Append('"');
                     sb.Append(": ");
-                    var isRestricted = pi.GetCustomAttribute<RestrictedValueAttribute>() is { };
-                    var value = isRestricted && !options.DiscloseSensitiveData
+                    var restricted = pi.GetCustomAttribute<RestrictedValueAttribute>();
+                    var isRestricted = restricted is { };
+                    if (restricted is { } && options.Logger is { })
+                    {
+                        isRestricted = !restricted.IsDisclosedForLogger(options.Logger);
+                    }
+                    var value = isRestricted 
                         ? getRestrictedJsonValue(pi, o) 
                         : getJsonValue(pi, o);
                     
@@ -59,12 +76,6 @@ namespace TetraPak.Logging
                 sb.AppendLine("}");
             }
             
-            // void renderChildStateIfApplicable(PropertyInfo propertyInfo, object o, int indent) obsolete
-            // {
-            //     if (propertyInfo.CanRead && options.IsSubOptionsSet(o))
-            //         renderObjectState(propertyInfo.GetValue(o), indent);
-            // }
-            
             string getJsonValue(PropertyInfo propertyInfo, object o)
             {
                 var value = options.TryGetOverridden(propertyInfo.Name, out var overridden)
@@ -72,10 +83,11 @@ namespace TetraPak.Logging
                     : propertyInfo.GetValue(o);
                 if (value is null)
                     return "null";
-                
-                return value is bool || value.IsNumeric() && !propertyInfo.PropertyType.IsEnum 
+
+                var result = value is bool || value.IsNumeric() && !propertyInfo.PropertyType.IsEnum 
                     ? value.ToString()?.ToLower()
                     : $"\"{value}\"";
+                return result ?? "null";
             }
             
             string getRestrictedJsonValue(PropertyInfo propertyInfo, object o)
@@ -86,8 +98,27 @@ namespace TetraPak.Logging
 
                 return value is null 
                     ? "null" 
-                    : "\"**** RESTRICTED ****\"";
+                    : "\"[**** RESTRICTED ****]\"";
             }
+        }
+
+        /// <summary>
+        ///   Examines the <see cref="RestrictedValueAttribute"/> and returns a value indicating whether
+        ///   the decorated value can be disclosed for a specified <see cref="ILogger"/>.
+        /// </summary>
+        /// <param name="self">
+        ///   The attribute.
+        /// </param>
+        /// <param name="logger">
+        ///   The intended logger provider.
+        /// </param>
+        /// <returns>
+        ///   <c>true</c> if the decorated value can be disclosed for <paramref name="logger"/>;
+        ///   otherwise <c>false</c>. 
+        /// </returns>
+        public static bool IsDisclosedForLogger(this RestrictedValueAttribute self, ILogger logger)
+        {
+            return self.DisclosureLogLevels.Any() && self.DisclosureLogLevels.Any(logger.IsEnabled);
         }
     }
 }

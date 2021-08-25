@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 using TetraPak.DynamicEntities;
 using TetraPak.Logging;
 using TetraPak.Serialization;
@@ -31,7 +32,7 @@ namespace TetraPak
         ///   Gets or sets the credentials secret/password element.
         /// </summary>
         [JsonPropertyName(KeySecret)]
-        [StateDump, RestrictedValue]
+        [StateDump, RestrictedValue(DisclosureLogLevels = new [] { LogLevel.Debug })]
         public string Secret
         {
             get => GetValue<string>(KeySecret);
@@ -42,7 +43,7 @@ namespace TetraPak
         ///   Gets or sets a new credentials secret/password element.
         /// </summary>
         [JsonPropertyName(KeyNewSecret)]
-        [StateDump, RestrictedValue]
+        [StateDump, RestrictedValue(DisclosureLogLevels = new [] { LogLevel.Debug })]
         public string NewSecret
         {
             get => GetValue<string>(KeyNewSecret);
