@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
+#nullable enable
+
 namespace TetraPak.Configuration
 {
     /// <summary>
@@ -35,22 +37,22 @@ namespace TetraPak.Configuration
         /// <summary>
         ///   Gets the encapsulated <see cref="IConfigurationSection"/>.  
         /// </summary>
-        public IConfigurationSection Section { get; private set; }
+        public IConfigurationSection? Section { get; private set; }
 
         /// <summary>
         ///   Gets the parent <see cref="IConfiguration"/> section
         ///   (or <c>null</c> if this section is also the configuration root).
         /// </summary>
-        public IConfiguration ParentConfiguration { get; }
+        public IConfiguration? ParentConfiguration { get; }
         
         /// <summary>
         ///   Gets a logger.
         /// </summary>
-        public ILogger Logger { get; }
+        public ILogger? Logger { get; }
 
-        public ConfigPath ConfigPath { get; protected set; }
+        public ConfigPath? ConfigPath { get; protected set; }
         
-        string getSectionKey(ConfigPath sectionIdentifier, IConfiguration configuration)
+        string getSectionKey(ConfigPath? sectionIdentifier, IConfiguration? configuration)
         {
             if (sectionIdentifier?.IsEmpty ?? true)
             {
@@ -77,14 +79,14 @@ namespace TetraPak.Configuration
         /// <returns>
         ///   A <see cref="FieldInfo"/> object.
         /// </returns>
-        protected virtual FieldInfo OnGetField(string fieldName)
+        protected virtual FieldInfo? OnGetField(string fieldName)
         {
             return GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
         }
 
         internal bool TryGetFieldValue<T>(string propertyName, out T value)
         {
-            value = default;
+            value = default!;
             var fieldName = $"_{propertyName.ToLowerInitial()}";
             var field = OnGetField(fieldName);
             var o = field?.GetValue(this);
@@ -107,10 +109,10 @@ namespace TetraPak.Configuration
         ///   the value is read from the configuration section and. If the configuration section also
         ///   doesn't supported the value the method returns the <paramref name="useDefault"/> value. 
         /// </summary>
-        protected T GetFromFieldThenSection<T>(
-            T useDefault = default, 
-            ValueParser<T> parser = null, 
-            [CallerMemberName] string propertyName = null)
+        protected T? GetFromFieldThenSection<T>(
+            T? useDefault = default, 
+            ValueParser<T>? parser = null, 
+            [CallerMemberName] string propertyName = null!)
         {
             if (TryGetFieldValue<T>(propertyName, out var fieldValue))
                 return fieldValue;
@@ -118,39 +120,39 @@ namespace TetraPak.Configuration
             if (parser is null)
             {
                 // automatically support string value 
-                var s = Section[propertyName];
+                var s = Section?[propertyName];
                 if (typeof(T) == typeof(string))
                     return string.IsNullOrEmpty(s)
-                            ? useDefault
+                            ? useDefault!
                             : (T) Convert.ChangeType(s, typeof(T));
                 
                 if (typeof(IStringValue).IsAssignableFrom(typeof(T)))
                 {
                     return string.IsNullOrEmpty(s)
                         ? useDefault
-                        : (T) Convert.ChangeType(StringValueBase.MakeStringValue<T>(s), typeof(T)); 
+                        : (T?) Convert.ChangeType(StringValueBase.MakeStringValue<T>(s), typeof(T)); 
                 }
                 
                 // automatically support boolean values 
-                if (typeof(T) == typeof(bool))
+                if (typeof(T) == typeof(bool) && Section is {})
                     return Section[propertyName].TryParseConfiguredBool(out var boolValue)
                         ? (T) Convert.ChangeType(boolValue, typeof(T))
-                        : useDefault;
+                        : useDefault!;
 
                 // automatically support TimeSpan values 
-                if (typeof(T) == typeof(TimeSpan))
+                if (typeof(T) == typeof(TimeSpan) && Section is {})
                     return Section[propertyName].TryParseConfiguredTimeSpan(out var timeSpanValue)
                         ? (T) Convert.ChangeType(timeSpanValue, typeof(T))
-                        : useDefault;
+                        : useDefault!;
 
-                return Section.GetValue(propertyName, useDefault);
+                return Section.GetValue(propertyName, useDefault!);
             }
 
             var stringValue = Section[propertyName];
-            return parser(stringValue, out var sectionValue) ? sectionValue : useDefault;
+            return parser(stringValue, out var sectionValue) ? sectionValue : useDefault!;
         }
 
-        void setSectionIdentifier(string value)
+        void setSectionIdentifier(string? value)
         {
             if (value?.Contains(ConfigPath.Separator) ?? false)
             {
@@ -160,7 +162,7 @@ namespace TetraPak.Configuration
             }
             else
             {
-                SectionIdentifier = value;
+                SectionIdentifier = value!;
                 ConfigPath = ParentConfiguration is IConfigurationSection section
                     ? $"{section.Path}:{value}"
                     : value; 
@@ -191,9 +193,9 @@ namespace TetraPak.Configuration
         ///   Specifies the configuration section to be encapsulated. 
         /// </param>
         public ConfigurationSection(
-            IConfiguration configuration, 
-            ILogger logger,
-            ConfigPath sectionIdentifier = null)
+            IConfiguration? configuration, 
+            ILogger? logger,
+            ConfigPath? sectionIdentifier = null)
         {
             ParentConfiguration = configuration;
             setSectionIdentifier(sectionIdentifier);
