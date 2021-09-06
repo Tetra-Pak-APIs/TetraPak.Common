@@ -8,6 +8,9 @@ using Microsoft.Extensions.Logging;
 
 namespace TetraPak.Logging
 {
+    /// <summary>
+    ///   Provides convenient helper methods to assist with consistent logging.
+    /// </summary>
     public static class LoggerHelper
     {
         /// <summary>

@@ -86,16 +86,30 @@ namespace TetraPak.Logging
         /// <returns>
         ///   A <see cref="string"/> presenting the state dump, with a prefix/suffix pair for easy recognition. 
         /// </returns>
-        public override string ToString()
+        /// <see cref="ToString(string)"/>
+        public override string ToString() => ToString("STATE DUMP");
+
+        /// <summary>
+        ///   Returns the <see cref="StateDump"/>'s textual representation.
+        /// </summary>
+        /// <param name="caption">
+        ///   (optional; default="STATE DUMP)<br/>
+        ///   A caption to be included in the state dump prefix and suffix elements.
+        /// </param>
+        /// <returns>
+        ///   A <see cref="string"/> presenting the state dump, with a prefix/suffix pair for easy recognition. 
+        /// </returns>
+        public string ToString(string caption)
         {
+            caption = string.IsNullOrWhiteSpace(caption) ? "STATE DUMP" : caption;
             var sb = new StringBuilder();
-            sb.AppendLine(">===== STATE DUMP BEGIN =====<");
+            sb.AppendLine($">===== {caption} BEGIN =====<");
             sb.AppendLine(_stringBuilder.ToString());
             if (_stackTrace is {})
             {
                 addStackTrace(sb);
             }
-            sb.AppendLine(">====== STATE DUMP END ======<");
+            sb.AppendLine($">====== {caption} END ======<");
             return sb.ToString();
         }
 

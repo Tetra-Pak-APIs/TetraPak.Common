@@ -9,7 +9,7 @@ namespace TetraPak
     ///   in log, traces or similar output when the declaring object's state is presented. 
     /// </summary>
     /// <seealso cref="StateDump"/>
-    /// <seealso cref="LoggerHelper.GetStateDump"/>
+    /// <seealso cref="WebLoggerHelper.GetStateDump"/>
     [AttributeUsage(AttributeTargets.Property)]
     public class RestrictedValueAttribute : Attribute
     {

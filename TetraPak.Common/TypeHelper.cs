@@ -95,7 +95,7 @@ namespace TetraPak
             };
         }
 
-        public static bool IsGenericBase(this Type self, Type genericType, bool inherited = false)
+        public static bool IsGenericBase(this Type self, Type genericType, bool inherited = true)
         {
             if (!genericType.IsGenericType || genericType.GenericTypeArguments.Length != 0) 
                 throw new ArgumentException($"Expected generic base type (no generic arguments) but found {genericType}");

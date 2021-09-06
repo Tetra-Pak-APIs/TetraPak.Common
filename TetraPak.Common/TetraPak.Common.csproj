@@ -2,25 +2,28 @@
 
     <PropertyGroup>
         <RootNamespace>TetraPak</RootNamespace>
+        <Title>Tetra Pak common library</Title>
         <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
         <LangVersion>9</LangVersion>
-        <PackageVersion>0.14.3</PackageVersion>
-        <Title>Tetra Pak common library</Title>
+        <PackageVersion>1.0.0</PackageVersion>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseFile>license.txt</PackageLicenseFile>
+        <PackageReleaseNotes>Release version</PackageReleaseNotes>
         <Description>A common set of code APIs and tools for Tetra Pak .NET development</Description>
+        <PackageReadmeFile>readme.md</PackageReadmeFile>
         <PackageProjectUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</PackageProjectUrl>
+        <PackageReleaseNotes>Release version</PackageReleaseNotes>
+        <Description>A common set of code APIs and tools for Tetra Pak .NET development</Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Authors>Tetra Pak</Authors>
         <Copyright>Tetra Pak</Copyright>
-        <PackageLicenseUrl>https://mit-license.org/</PackageLicenseUrl>
         <RepositoryUrl>https://github.com/Tetra-Pak-APIs/TetraPak.Common</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
-        <PackageReleaseNotes>Initial release (beta)
-- DynamicEntity class now support a mechanism for automatically setting internal value kets accoding to a configured format (camelCase, PascalCase, snake_case or kebab-case) 
-- ILogger extension now supports .Trace()</PackageReleaseNotes>
         <Configurations>Debug;Release;Debug | Production;Debug Production</Configurations>
         <Platforms>AnyCPU</Platforms>
-        <AssemblyVersion>0.14.3</AssemblyVersion>
-        <FileVersion>0.14.3</FileVersion>
+        <AssemblyVersion>1.0.0</AssemblyVersion>
+        <FileVersion>1.0.0</FileVersion>
+        <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -41,6 +44,10 @@
       <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
     </PropertyGroup>
     <ItemGroup>
+      <PackageReference Include="DefaultDocumentation" Version="0.7.6">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
@@ -58,5 +65,15 @@
     <ItemGroup>
       <Folder Include="_docs\_codeApi" />
     </ItemGroup>
+    <ItemGroup>
+        <None Include="_nuget\icon.png" Pack="true" PackagePath="\" />
+        <None Include="_nuget\license.txt" Pack="true" PackagePath="\" />
+        <None Include="readme.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <!-- Exec Command="python $(SolutionDir)_buildScripts/copyFiles.py -verbose -delay 2 -move -clean -name *.md -from $(ProjectDir)bin/Release -to $(ProjectDir)_docs/_codeApi" Condition="$(ConfigurationName)=='Release'" -->
+        <!--Exec Command="dotnet exec $(SolutionDir)fs\bin\Release\net5.0\fs.dll" /-->
+        
+    </Target>
 
 </Project>

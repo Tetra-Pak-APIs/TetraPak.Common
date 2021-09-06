@@ -32,7 +32,7 @@ namespace TetraPak.Configuration
         ///   }
         ///   </code>
         /// </summary>
-        protected virtual string SectionIdentifier { get; set; }
+        public virtual string SectionIdentifier { get; protected set; }
         
         /// <summary>
         ///   Gets the encapsulated <see cref="IConfigurationSection"/>.  

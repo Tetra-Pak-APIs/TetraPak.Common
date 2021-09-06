@@ -239,7 +239,7 @@ namespace TetraPak.Logging
                         continue;
                             
                     var attribute = i.GetCustomAttribute<StateDumpAttribute>();
-                    if (attribute is null)
+                    if (attribute is null && includeHandler is null)
                         continue;
 
                     if (includeHandler?.Invoke(i) ?? true)
