@@ -36,8 +36,12 @@
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
       <DocumentationFile>bin\Release\TetraPak.Common.xml</DocumentationFile>
+        <DefaultDocumentationFileNameMode>FullName</DefaultDocumentationFileNameMode>
+        <DefaultDocumentationGeneratedPages>Namespaces, Types</DefaultDocumentationGeneratedPages>
+        <DefaultDocumentationLogLevel>Debug</DefaultDocumentationLogLevel>
+        <DefaultDocumentationFolder>$(ProjectDir)_docs/_codeApi</DefaultDocumentationFolder>
     </PropertyGroup>
-
+    
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug | Production' ">
       <NoWarn>0067;1701;1702;1705;1591</NoWarn>
       <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
@@ -70,10 +74,5 @@
         <None Include="_nuget\license.txt" Pack="true" PackagePath="\" />
         <None Include="readme.md" Pack="true" PackagePath="\" />
     </ItemGroup>
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-        <!-- Exec Command="python $(SolutionDir)_buildScripts/copyFiles.py -verbose -delay 2 -move -clean -name *.md -from $(ProjectDir)bin/Release -to $(ProjectDir)_docs/_codeApi" Condition="$(ConfigurationName)=='Release'" -->
-        <!--Exec Command="dotnet exec $(SolutionDir)fs\bin\Release\net5.0\fs.dll" /-->
-        
-    </Target>
 
 </Project>

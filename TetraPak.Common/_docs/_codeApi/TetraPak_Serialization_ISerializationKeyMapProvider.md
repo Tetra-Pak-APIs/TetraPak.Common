@@ -10,7 +10,13 @@ public interface ISerializationKeyMapProvider
 Implementing this interface is a cheap and efficient means to allow your app service to force a  
 naming convention (such as camel case, Pascal case, snake case etc.) without having to declare  
 additional classes for output.  
-
-| Methods | |
-| :--- | :--- |
-| [GetKeyMap()](TetraPak_Serialization_ISerializationKeyMapProvider_GetKeyMap().md 'TetraPak.Serialization.ISerializationKeyMapProvider.GetKeyMap()') | Returns a [KeyMapInfo](TetraPak_Serialization_KeyMapInfo.md 'TetraPak.Serialization.KeyMapInfo') object with a key map and other mapping settings.<br/> |
+### Methods
+<a name='TetraPak_Serialization_ISerializationKeyMapProvider_GetKeyMap()'></a>
+## ISerializationKeyMapProvider.GetKeyMap() Method
+Returns a [KeyMapInfo](TetraPak_Serialization_KeyMapInfo.md 'TetraPak.Serialization.KeyMapInfo') object with a key map and other mapping settings.  
+```csharp
+TetraPak.Serialization.KeyMapInfo GetKeyMap();
+```
+#### Returns
+[KeyMapInfo](TetraPak_Serialization_KeyMapInfo.md 'TetraPak.Serialization.KeyMapInfo')  
+  

@@ -13,20 +13,89 @@ Derived
 &#8627; [ActorToken](TetraPak_ActorToken.md 'TetraPak.ActorToken')  
 
 Implements [System.IDisposable](https://docs.microsoft.com/en-us/dotnet/api/System.IDisposable 'System.IDisposable')  
+### Constructors
+<a name='TetraPak_Credentials_Credentials()'></a>
+## Credentials.Credentials() Constructor
+Initializes the [Credentials](TetraPak_Credentials.md 'TetraPak.Credentials') value.  
+```csharp
+public Credentials();
+```
+  
+<a name='TetraPak_Credentials_Credentials(string_string_string)'></a>
+## Credentials.Credentials(string, string, string) Constructor
+Initializes the [Credentials](TetraPak_Credentials.md 'TetraPak.Credentials') value.  
+```csharp
+public Credentials(string identity, string secret, string newSecret=null);
+```
+#### Parameters
+<a name='TetraPak_Credentials_Credentials(string_string_string)_identity'></a>
+`identity` [System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')  
+Initializes the [Identity](TetraPak_Credentials.md#TetraPak_Credentials_Identity 'TetraPak.Credentials.Identity') property.  
+  
+<a name='TetraPak_Credentials_Credentials(string_string_string)_secret'></a>
+`secret` [System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')  
+Initializes the [Secret](TetraPak_Credentials.md#TetraPak_Credentials_Secret 'TetraPak.Credentials.Secret') property.  
+  
+<a name='TetraPak_Credentials_Credentials(string_string_string)_newSecret'></a>
+`newSecret` [System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')  
+(optional)<br/>  
+Initializes the [NewSecret](TetraPak_Credentials.md#TetraPak_Credentials_NewSecret 'TetraPak.Credentials.NewSecret') property.  
+  
+  
+### Properties
+<a name='TetraPak_Credentials_Identity'></a>
+## Credentials.Identity Property
+Gets or sets the credentials identity element.  
+```csharp
+public string Identity { get; set; }
+```
+#### Property Value
+[System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')
+  
+<a name='TetraPak_Credentials_IsAssigned'></a>
+## Credentials.IsAssigned Property
+Gets a value indicating whether the credentials are assigned.  
+```csharp
+public virtual bool IsAssigned { get; }
+```
+#### Property Value
+[System.Boolean](https://docs.microsoft.com/en-us/dotnet/api/System.Boolean 'System.Boolean')
+  
+<a name='TetraPak_Credentials_NewSecret'></a>
+## Credentials.NewSecret Property
+Gets or sets a new credentials secret/password element.  
+```csharp
+public string NewSecret { get; set; }
+```
+#### Property Value
+[System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')
+  
+<a name='TetraPak_Credentials_Secret'></a>
+## Credentials.Secret Property
+Gets or sets the credentials secret/password element.  
+```csharp
+public string Secret { get; set; }
+```
+#### Property Value
+[System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')
+  
+### Methods
+<a name='TetraPak_Credentials_CloneWithoutSecrets()'></a>
+## Credentials.CloneWithoutSecrets() Method
+Clones the entity without any secrets, to support scenarios where secrets are not necessary.  
+```csharp
+public TetraPak.Credentials CloneWithoutSecrets();
+```
+#### Returns
+[Credentials](TetraPak_Credentials.md 'TetraPak.Credentials')  
+A cloned [Credentials](TetraPak_Credentials.md 'TetraPak.Credentials').  
+  
+<a name='TetraPak_Credentials_Dispose()'></a>
+## Credentials.Dispose() Method
+Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+```csharp
+public void Dispose();
+```
 
-| Constructors | |
-| :--- | :--- |
-| [Credentials()](TetraPak_Credentials_Credentials().md 'TetraPak.Credentials.Credentials()') | Initializes the [Credentials](TetraPak_Credentials.md 'TetraPak.Credentials') value.<br/> |
-| [Credentials(string, string, string)](TetraPak_Credentials_Credentials(string_string_string).md 'TetraPak.Credentials.Credentials(string, string, string)') | Initializes the [Credentials](TetraPak_Credentials.md 'TetraPak.Credentials') value.<br/> |
-
-| Properties | |
-| :--- | :--- |
-| [Identity](TetraPak_Credentials_Identity.md 'TetraPak.Credentials.Identity') | Gets or sets the credentials identity element.<br/> |
-| [IsAssigned](TetraPak_Credentials_IsAssigned.md 'TetraPak.Credentials.IsAssigned') | Gets a value indicating whether the credentials are assigned.<br/> |
-| [NewSecret](TetraPak_Credentials_NewSecret.md 'TetraPak.Credentials.NewSecret') | Gets or sets a new credentials secret/password element.<br/> |
-| [Secret](TetraPak_Credentials_Secret.md 'TetraPak.Credentials.Secret') | Gets or sets the credentials secret/password element.<br/> |
-
-| Methods | |
-| :--- | :--- |
-| [CloneWithoutSecrets()](TetraPak_Credentials_CloneWithoutSecrets().md 'TetraPak.Credentials.CloneWithoutSecrets()') | Clones the entity without any secrets, to support scenarios where secrets are not necessary.<br/> |
-| [Dispose()](TetraPak_Credentials_Dispose().md 'TetraPak.Credentials.Dispose()') | Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. |
+Implements [Dispose()](https://docs.microsoft.com/en-us/dotnet/api/System.IDisposable.Dispose 'System.IDisposable.Dispose')  
+  

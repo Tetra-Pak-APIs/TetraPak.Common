@@ -32,7 +32,7 @@ namespace TetraPak.Configuration
         ///   }
         ///   </code>
         /// </summary>
-        public virtual string SectionIdentifier { get; protected set; }
+        public string SectionIdentifier { get; protected set; }
         
         /// <summary>
         ///   Gets the encapsulated <see cref="IConfigurationSection"/>.  
@@ -188,22 +188,36 @@ namespace TetraPak.Configuration
         /// <param name="logger">
         ///   Initializes the <see cref="Logger"/> value.
         /// </param>
-        /// <param name="sectionIdentifier">
+        /// <param name="configPath">
         ///   (optional; default=value from <see cref="SectionIdentifier"/>)<br/>
         ///   Specifies the configuration section to be encapsulated. 
         /// </param>
         public ConfigurationSection(
             IConfiguration? configuration, 
             ILogger? logger,
-            ConfigPath? sectionIdentifier = null)
+            ConfigPath? configPath = null)
         {
             ParentConfiguration = configuration;
-            setSectionIdentifier(sectionIdentifier);
-            var sectionKey = getSectionKey(sectionIdentifier, configuration);
+            if (configPath?.Contains(ConfigPath.Separator) ?? false)
+            {
+                SectionIdentifier = configPath.CopyLast();
+                ConfigPath = configPath;
+            }
+            else
+            {
+                SectionIdentifier = configPath!;
+                ConfigPath = ParentConfiguration is IConfigurationSection section
+                    ? $"{section.Path}:{configPath}"
+                    : configPath; 
+                
+            }
+
+            // setSectionIdentifier(configPath);
+            var sectionKey = getSectionKey(configPath, configuration);
             Section = configuration?.GetSection(sectionKey);
             IsEmpty = Section?.IsEmpty() ?? true; 
             Logger = logger;
-            ConfigPath = sectionIdentifier;
+            ConfigPath = configPath;
         }
 
         protected ConfigurationSection()

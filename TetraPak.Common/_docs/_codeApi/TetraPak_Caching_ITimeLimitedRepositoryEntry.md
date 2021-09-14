@@ -5,8 +5,22 @@ Implementors of this class can represent individual time limited repository entr
 ```csharp
 public interface ITimeLimitedRepositoryEntry
 ```
-
-| Properties | |
-| :--- | :--- |
-| [Key](TetraPak_Caching_ITimeLimitedRepositoryEntry_Key.md 'TetraPak.Caching.ITimeLimitedRepositoryEntry.Key') | A key identifying the value to be stored within the time limited repository. <br/> |
-| [Repository](TetraPak_Caching_ITimeLimitedRepositoryEntry_Repository.md 'TetraPak.Caching.ITimeLimitedRepositoryEntry.Repository') | The name of the repository.<br/> |
+### Properties
+<a name='TetraPak_Caching_ITimeLimitedRepositoryEntry_Key'></a>
+## ITimeLimitedRepositoryEntry.Key Property
+A key identifying the value to be stored within the time limited repository.   
+```csharp
+string Key { get; }
+```
+#### Property Value
+[System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')
+  
+<a name='TetraPak_Caching_ITimeLimitedRepositoryEntry_Repository'></a>
+## ITimeLimitedRepositoryEntry.Repository Property
+The name of the repository.  
+```csharp
+string Repository { get; }
+```
+#### Property Value
+[System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')
+  

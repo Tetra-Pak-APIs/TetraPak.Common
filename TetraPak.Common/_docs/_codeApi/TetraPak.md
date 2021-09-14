@@ -13,6 +13,8 @@
 | [IdentityConflictException](TetraPak_IdentityConflictException.md 'TetraPak.IdentityConflictException') | To be thrown when there is a conflict of identities.<br/> |
 | [MultiStringValue](TetraPak_MultiStringValue.md 'TetraPak.MultiStringValue') | Represents one or more supported user roles.<br/> |
 | [MultiStringValueHelper](TetraPak_MultiStringValueHelper.md 'TetraPak.MultiStringValueHelper') |  |
+| [Outcome](TetraPak_Outcome.md 'TetraPak.Outcome') | Carries the outcome of an operation as well as any requested data, or an exception.<br/>This class is `abstract`.<br/> |
+| [Outcome&lt;T&gt;](TetraPak_Outcome_T_.md 'TetraPak.Outcome&lt;T&gt;') | Carries the outcome of an operation as well as any requested data, or an exception.<br/>The class derives from the `abstract`[Outcome](TetraPak_Outcome.md 'TetraPak.Outcome') class.<br/> |
 | [RandomString](TetraPak_RandomString.md 'TetraPak.RandomString') |  |
 | [ReadChunk](TetraPak_ReadChunk.md 'TetraPak.ReadChunk') |  |
 | [ReflectionHelper](TetraPak_ReflectionHelper.md 'TetraPak.ReflectionHelper') |  |

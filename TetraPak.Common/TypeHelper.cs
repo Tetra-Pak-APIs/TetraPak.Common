@@ -122,7 +122,7 @@ namespace TetraPak
             }
         }
 
-        public static bool TryGetGenericBase(this Type self, Type genericType, out Type type)
+        public static bool TryGetGenericBase(this Type self, Type genericType, out Type type, bool inherited = true)
         {
             if (!genericType.IsGenericType || genericType.GenericTypeArguments.Length != 0) 
                 throw new ArgumentException($"Expected generic base type (no generic arguments) but found {genericType}");
@@ -142,7 +142,7 @@ namespace TetraPak
 
                 next:
                 
-                if (self.BaseType is null)
+                if (!inherited || self.BaseType is null)
                 {
                     type = null;
                     return false;

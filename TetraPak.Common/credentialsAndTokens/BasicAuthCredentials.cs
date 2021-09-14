@@ -31,14 +31,14 @@ namespace TetraPak
             }
 
             var bytes = Convert.FromBase64String(encoded);
-            var creds = Encoding.UTF8.GetString(bytes).Split(new[] {SecretQualifier[0]});
-            if (creds.Length != 2)
+            var credentials = Encoding.UTF8.GetString(bytes).Split(new[] {SecretQualifier[0]});
+            if (credentials.Length != 2)
                 return Outcome<(string, string, string)>.Fail();
 
-            var splitSecret = creds[1].Split(NewSecretQualifier, StringSplitOptions.RemoveEmptyEntries);
+            var splitSecret = credentials[1].Split(NewSecretQualifier, StringSplitOptions.RemoveEmptyEntries);
             return Outcome<(string identity, string secret, string newSecret)>.Success(splitSecret.Length == 1
-                ? (creds[0], creds[1], null)
-                : (creds[0], splitSecret[0], splitSecret[1]));
+                ? (credentials[0], credentials[1], null)
+                : (credentials[0], splitSecret[0], splitSecret[1]));
         }
 
         public static BasicAuthCredentials Parse(string stringValue)

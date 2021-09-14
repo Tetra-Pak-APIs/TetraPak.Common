@@ -13,7 +13,13 @@ Derived
 &#8627; [RandomString](TetraPak_RandomString.md 'TetraPak.RandomString')  
 &#8627; [ReadChunk](TetraPak_ReadChunk.md 'TetraPak.ReadChunk')  
 &#8627; [StringValueBase](TetraPak_StringValueBase.md 'TetraPak.StringValueBase')  
-
-| Properties | |
-| :--- | :--- |
-| [StringValue](TetraPak_IStringValue_StringValue.md 'TetraPak.IStringValue.StringValue') | The value's string representation.<br/> |
+### Properties
+<a name='TetraPak_IStringValue_StringValue'></a>
+## IStringValue.StringValue Property
+The value's string representation.  
+```csharp
+string StringValue { get; }
+```
+#### Property Value
+[System.String](https://docs.microsoft.com/en-us/dotnet/api/System.String 'System.String')
+  

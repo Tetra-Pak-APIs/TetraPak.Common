@@ -27,8 +27,8 @@ namespace TetraPak.Logging
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         public static void Trace(this ILogger logger, string message, string messageId = null)
         {
@@ -46,8 +46,8 @@ namespace TetraPak.Logging
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         public static void Debug(this ILogger logger, string message, string messageId = null)
         {
@@ -65,8 +65,8 @@ namespace TetraPak.Logging
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         public static void Warning(this ILogger logger, string message, string messageId = null)
         {
@@ -84,8 +84,8 @@ namespace TetraPak.Logging
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         public static void Information(this ILogger logger, string message, string messageId = null)
         {
@@ -106,8 +106,8 @@ namespace TetraPak.Logging
         ///   A message to be written to <paramref name="logger"/>.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         public static void Error(this ILogger logger, Exception exception, string message = null, string messageId = null)
         {
@@ -123,8 +123,8 @@ namespace TetraPak.Logging
         ///   The message to be logged.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         /// <returns>
         ///   A standardized logging message (<see cref="string"/> value).
@@ -146,8 +146,8 @@ namespace TetraPak.Logging
         ///   A message to be logged.
         /// </param>
         /// <param name="messageId">
-        ///   (optional)<bt/>
-        ///   A unique string value to be used for referencing/diagnostics purposes.
+        ///   (optional)<br/>
+        ///   A unique string value for tracking a request/response (mainly for diagnostics purposes).
         /// </param>
         /// <returns>
         ///   A standardized logging message (<see cref="string"/> value).
